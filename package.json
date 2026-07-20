@@ -1,0 +1,10 @@
+{
+  "name": "deltamax-website",
+  "version": "1.0.0",
+  "description": "Static website with a server-side contact form endpoint",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}

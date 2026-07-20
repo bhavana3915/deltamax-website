@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DeltaMax – Data Quality Platform</title>
+    <!-- Tailwind + Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <style>
+        /* ----- reset & base ----- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; overflow-x: hidden; }
+        :root { --section-gap: 60px; --section-gap-tablet: 50px; --section-gap-mobile: 40px; }
+
+        /* ----- navbar ----- */
+        .navbar {
+            background: rgba(248, 250, 252, 0.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+        }
+        .nav-link { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .nav-link:hover { color: #1e40af; transform: translateY(-1px); }
+        .dropdown-content {
+            display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            padding: 16px; z-index: 50; min-width: 240px;
+        }
+        .dropdown:hover .dropdown-content, .dropdown.active .dropdown-content { display: flex; gap: 16px; align-items: center; justify-content: center; }
+        .cloud-icon { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .cloud-icon:hover { transform: scale(1.15); }
+
+        /* ----- hero ----- */
+        .hero-bg {
+            background: #e8f4f8;
+            padding-top: 6rem;
+            padding-bottom: var(--section-gap);
+            margin-top: 1.5rem;
+        }
+        .hero-collage {
+            width: 100%;
+            border-radius: 2rem;
+            overflow: hidden;
+            background: transparent;
+            box-shadow: 0 24px 60px rgba(15,23,42,0.08);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 0.5rem;
+            max-height: 360px;
+            height: 100%;
+            min-height: 240px;
+        }
+        .hero-collage-card { overflow: hidden; background: transparent; position: relative; border-radius: 0; }
+        .hero-collage-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hero-highlight { border: 3px solid #0ea5e9; box-shadow: 0 20px 50px rgba(14,165,233,0.15); transform: scale(1.02); z-index: 1; }
+
+        /* ===== TECHNICAL COMPONENTS (expandable cards) ===== */
+        .tech-section { padding: var(--section-gap) 70px; background: transparent; }
+        .tech-heading { font-size: 38px; font-weight: 700; color: #0a1628; text-align: center; margin-bottom: 40px; letter-spacing: -0.5px; }
+        .tech-heading span { color: #0ea5e9; }
+        .cont { position: relative; overflow: visible; min-height: 420px; background: transparent; padding: 0 20px; }
+        .cont__inner { display: flex; gap: 16px; align-items: stretch; min-height: 380px; }
+        .el {
+            flex: 1; height: 100%; background: #1a1a2e; position: relative; cursor: pointer;
+            overflow: visible; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); border-radius: 16px;
+            min-height: 340px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin-bottom: 40px;
+        }
+        .cont.s--el-active .el:not(.s--active) {
+            flex: 0; opacity: 0; margin: 0; padding: 0; width: 0; overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.4,0,0.2,1); min-width: 0; min-height: 0; height: 0; margin-bottom: 0;
+        }
+        .cont.s--el-active .el.s--active { flex: 1; width: 100%; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); margin-bottom: 0; min-height: 340px; }
+
+        .el__bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            transition: transform 0.6s, filter 0.6s;
+            filter: blur(0px);
+        }
+        .el.s--active .el__bg { transform: scale(1.1); filter: blur(4px); }
+        .el__bg:after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); transition: opacity 0.5s;
+        }
+        .cont.s--el-active .el.s--active .el__bg:after { background: rgba(0,0,0,0.4); }
+
+        .el__preview-cont {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center; z-index: 2; pointer-events: none;
+            transition: all 0.3s;
+        }
+        .el__heading { color: #fff; text-transform: uppercase; font-size: 18px; font-weight: 700; letter-spacing: 2px; text-shadow: 0 2px 20px rgba(0,0,0,0.8); text-align: center; }
+        .el.s--active .el__preview-cont { opacity: 0; transform: scale(0.8); }
+
+        .el__content {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 40px; opacity: 0; pointer-events: none; z-index: 2;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            transition: all 0.1s;
+            text-align: center;
+        }
+        .el.s--active .el__content { opacity: 1; pointer-events: auto; transition: all 0.5s 0.8s; }
+
+        .el__text {
+            text-transform: uppercase; font-size: clamp(28px, 4vw, 52px); font-weight: 700;
+            color: #fff; text-align: center; line-height: 1.2; max-width: 80%; text-shadow: 0 2px 30px rgba(0,0,0,0.5);
+        }
+        .el__text span { display: block; font-size: 0.5em; font-weight: 400; opacity: 0.8; margin-top: 0.5rem; }
+
+        .el__details {
+            margin-top: 1.5rem; color: rgba(255,255,255,0.92); text-align: center;
+            max-width: 88%; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.8;
+        }
+        .el__details ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+        .el__details li {
+            display: inline-block; padding: 0.4rem 1rem; border-radius: 999px;
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+            font-size: 0.9rem;
+        }
+
+        .el__close-btn {
+            position: absolute; right: 24px; top: 24px; width: 44px; height: 44px;
+            opacity: 0; pointer-events: none; z-index: 5; cursor: pointer; transition: all 0.3s;
+            background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .el.s--active .el__close-btn { opacity: 1; pointer-events: auto; transition: all 0.3s 1s; }
+        .el__close-btn:hover { background: rgba(255,255,255,0.2); transform: rotate(90deg); }
+        .el__close-btn:before, .el__close-btn:after { content: ""; position: absolute; width: 60%; height: 3px; background: #fff; border-radius: 2px; }
+        .el__close-btn:before { transform: rotate(45deg); }
+        .el__close-btn:after { transform: rotate(-45deg); }
+
+        .el__index {
+            position: absolute; bottom: -40px; left: 0; width: 100%; height: auto;
+            display: flex; align-items: center; justify-content: center; z-index: 3;
+            pointer-events: none; user-select: none; overflow: visible;
+        }
+        .el__index-number {
+            font-size: 140px; font-weight: 900; color: rgba(26,26,46,0.08);
+            transition: all 0.5s cubic-bezier(0.4,0,0.2,1); opacity: 0.6; line-height: 1;
+            font-family: 'Inter', sans-serif; letter-spacing: -5px;
+        }
+        .el:hover .el__index-number { opacity: 1; color: #1f5da8; }
+        .cont.s--el-active .el__index-number { opacity: 0 !important; transform: translateY(60px) !important; }
+
+        .el:nth-child(1) .el__bg { background-image: url('images/data.png'); }
+        .el:nth-child(2) .el__bg { background-image: url('images/ingestion.png'); }
+        .el:nth-child(3) .el__bg { background-image: url('images/processing.png'); }
+        .el:nth-child(4) .el__bg { background-image: url('images/trust-scoring.png'); }
+        .el:nth-child(5) .el__bg { background-image: url('images/storage.png'); }
+        .el:nth-child(6) .el__bg { background-image: url('images/alert.png'); }
+
+        /* ===== CORE TECHNICAL COMPONENTS – 2 + 3 pyramid, flip image cards ===== */
+        .core-section {
+            padding: var(--section-gap) 70px;
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .core-heading { font-size: 38px; font-weight: 700; color: #0a1628; text-align: center; margin-bottom: 40px; letter-spacing: -0.5px; }
+        .core-heading span { color: #0ea5e9; }
+        .core-wrapper { max-width: 1320px; width: 100%; margin: 0 auto; padding: 0 20px; }
+
+        :root { --core-gap: 6px; }
+        .core-grid {
+            display: flex;
+            flex-direction: column;
+            gap: var(--core-gap);
+            background: transparent;
+        }
+        .core-row {
+            display: flex;
+            justify-content: center;
+            gap: var(--core-gap);
+        }
+
+        /* Outer card holds perspective + click target; sizing/position lives here */
+        .core-card {
+            position: relative;
+            border-radius: 24px;
+            min-height: 280px;
+            perspective: 1200px;
+            cursor: pointer;
+            flex: 0 0 auto;
+            width: calc((100% - 2 * var(--core-gap)) / 3);
+        }
+
+        /* Rotating inner wrapper */
+        .core-card-flip {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: inherit;
+            transform-style: preserve-3d;
+            transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .core-card.flipped .core-card-flip { transform: rotateY(180deg); }
+
+        /* Shared face styling */
+        .core-card-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            overflow: hidden;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            box-shadow: 0 12px 28px rgba(15,23,42,0.14);
+            transition: box-shadow 0.3s ease;
+        }
+        .core-card:hover .core-card-face { box-shadow: 0 18px 36px rgba(15,23,42,0.2); }
+
+        /* Front face: image + title */
+        .core-card-front {
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            padding: 24px;
+            color: #fff;
+        }
+        .core-card-front::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 1; pointer-events: none;
+        }
+        .core-card-content { position: relative; z-index: 2; }
+        .core-card h4 {
+            font-size: 20px; font-weight: 700; color: #fff; margin: 0;
+            letter-spacing: -0.2px; text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+
+        /* Back face: description */
+        .core-card-back {
+            background: linear-gradient(160deg, #0a1628 0%, #12315c 100%);
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 28px;
+            color: #fff;
+        }
+        .core-card-back .num {
+            font-weight: 700; font-size: 14px; color: #38bdf8; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.85;
+        }
+        .core-card-back h4 {
+            font-size: 19px; font-weight: 700; color: #fff; margin: 0 0 10px; letter-spacing: -0.2px;
+        }
+        .core-card-back p {
+            font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.85); margin: 0;
+        }
+        .core-card-back .close-hint {
+            margin-top: 16px; font-size: 12px; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 6px;
+        }
+
+        /* ===== USE CASES ===== */
+        .use-cases-section {
+            padding: var(--section-gap) 20px;
+            background: #ffffff;
+            text-align: center;
+        }
+        .use-cases-heading { font-size: 38px; font-weight: 700; color: #0a1628; letter-spacing: -0.5px; margin-bottom: 8px; }
+        .use-cases-heading span { color: #0ea5e9; }
+        .use-cases-sub { color: #64748b; font-size: 17px; margin-bottom: 40px; }
+
+        .use-cases-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .use-case-card {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            min-height: 260px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 24px;
+            color: #fff;
+        }
+        .use-case-card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(145deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .use-case-card .bg-blur {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            filter: blur(3px);
+            transform: scale(1.05);
+            z-index: 0;
+        }
+        .use-case-card:hover { transform: translateY(-6px); box-shadow: 0 24px 44px rgba(0,0,0,0.15); }
+        .use-case-content { position: relative; z-index: 2; text-align: left; width: 100%; }
+        .use-case-content h4 { font-size: 22px; font-weight: 700; margin-bottom: 6px; letter-spacing: 0.3px; }
+        .use-case-content p { font-size: 14px; line-height: 1.6; opacity: 0.9; max-width: 90%; margin: 0 0 12px 0; }
+        .use-case-tag {
+            display: inline-block; padding: 4px 14px; background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px); border-radius: 40px; font-size: 12px; font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        /* ===== STICKY SCROLL ===== */
+        .sticky-scroll-section { position: relative; min-height: 280vh; background: transparent; padding: var(--section-gap) 0; }
+        .sticky-scroll-heading { max-width: 980px; margin: 0 auto 20px; padding: 0 24px; text-align: center; }
+        .sticky-scroll-heading h2 { font-size: 38px; font-weight: 700; color: #0a1628; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .sticky-scroll-heading p { font-size: 17px; line-height: 1.6; color: #64748b; }
+
+        .sticky-scroll-wrapper {
+            position: sticky; top: 80px; height: calc(100vh - 80px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 10px 20px; overflow: hidden; background: transparent;
+        }
+        .sticky-scroll-card {
+            display: flex;
+            width: 100%; max-width: 1100px; height: 65vh; max-height: 500px;
+            background: transparent;
+            border-radius: 0;
+            border: none;
+            overflow: hidden;
+            box-shadow: none;
+            transition: all 0.3s ease;
+        }
+        .sticky-left {
+            flex: 0 0 260px;
+            background: transparent;
+            padding: 32px 20px 32px 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+            border-right: 1px solid rgba(15,23,42,0.08);
+            position: relative;
+        }
+        .sticky-left .title-item {
+            padding: 14px 16px 14px 0;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+            border-right: 4px solid transparent;
+            background: transparent;
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sticky-left .title-item .num {
+            display: inline-block; width: 28px; font-weight: 700; color: #94a3b8; font-size: 14px; transition: color 0.3s;
+        }
+        .sticky-left .title-item.active { color: #0a1628; border-right-color: #0ea5e9; background: transparent; }
+        .sticky-left .title-item.active .num { color: #0ea5e9; }
+        .sticky-left .title-item:not(:last-child) { border-bottom: 1px solid #f1f5f9; }
+
+        .sticky-right {
+            flex: 1;
+            padding: 50px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: transparent;
+            transition: all 0.4s ease;
+        }
+        .sticky-right .content-panel { display: none; opacity: 0; animation: fadeUp 0.45s ease forwards; }
+        .sticky-right .content-panel.active { display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 100%; }
+        .sticky-right .content-panel h3 { font-size: 34px; font-weight: 700; color: #0a1628; margin-bottom: 0; letter-spacing: -0.5px; }
+        .sticky-right .content-panel h3 span { color: #0ea5e9; }
+        .sticky-right .content-panel p { font-size: 17px; line-height: 1.7; color: #475569; max-width: 90%; margin: 0; }
+        .sticky-right .content-panel .feature-tag {
+            display: inline-block; margin-top: 6px; padding: 6px 18px;
+            background: #e8f4f8; color: #0ea5e9; border-radius: 40px; font-weight: 600; font-size: 13px;
+        }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ===== TECH STACK ===== */
+        .tech-stack-section { padding: var(--section-gap) 20px; background: #ffffff; text-align: center; }
+        .tech-stack-section h2 { font-size: 38px; font-weight: 700; color: #0a1628; letter-spacing: -0.5px; margin-bottom: 8px; }
+        .tech-stack-section h2 span { color: #0ea5e9; }
+        .tech-stack-section .sub { color: #64748b; font-size: 17px; margin-bottom: 40px; }
+        .logo-scroll-wrapper { overflow: hidden; width: 100%; max-width: 1200px; margin: 0 auto; position: relative; mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+        .logo-scroll-track { display: flex; gap: 50px; width: max-content; animation: scrollLogos 28s linear infinite; align-items: center; }
+        .logo-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; border-radius: 12px; transition: all 0.2s; min-width: 70px; background: transparent !important; border: none !important; box-shadow: none !important; }
+        .logo-item:hover { transform: scale(1.05); }
+        .logo-item i { font-size: 38px; color: #1e293b; }
+        .logo-item .logo-label { font-size: 12px; font-weight: 600; color: #475569; letter-spacing: 0.3px; text-transform: uppercase; }
+        .logo-item .fa-python { color: #3776AB; }
+        .logo-item .fa-react { color: #61DAFB; }
+        .logo-item .fa-docker { color: #2496ED; }
+        .logo-item .fa-database { color: #336791; }
+        .logo-item .fa-google { color: #4285F4; }
+        .logo-item .fa-chart-pie { color: #FF6384; }
+        .logo-item .fa-bolt { color: #FDB813; }
+        .logo-item .fa-cloud { color: #0ea5e9; }
+        .logo-item .fa-fire { color: #e25a1c; }
+        .logo-item .fa-table { color: #150458; }
+        .logo-item .fa-exchange-alt { color: #34A853; }
+        @keyframes scrollLogos { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* ===== SECURITY & COMPLIANCE ===== */
+        .security-section {
+            padding: var(--section-gap) 20px;
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .security-section h2 { font-size: 38px; font-weight: 700; color: #0a1628; letter-spacing: -0.5px; margin-bottom: 6px; text-align: center; }
+        .security-section h2 span { color: #0ea5e9; }
+        .security-section .sub { color: #64748b; font-size: 17px; margin-bottom: 40px; text-align: center; }
+
+        .security-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px 60px;
+            max-width: 1100px;
+            width: 100%;
+            align-items: center;
+        }
+        .security-left { display: flex; flex-direction: column; gap: 40px; align-items: flex-end; }
+        .security-right { display: flex; flex-direction: column; gap: 40px; align-items: flex-start; padding-left: 20px; }
+
+        .security-item {
+            background: transparent;
+            padding: 16px 0;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            max-width: 280px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.22,1,0.36,1);
+            text-align: left;
+        }
+        .security-item.visible { opacity: 1; transform: translateY(0); }
+        .security-item .icon { font-size: 28px; margin-bottom: 6px; display: block; color: #0ea5e9; }
+        .security-item h4 { font-size: 19px; font-weight: 700; color: #0a1628; margin-bottom: 2px; }
+        .security-item p { font-size: 14px; color: #64748b; line-height: 1.6; margin: 0; }
+
+        .security-center { display: flex; align-items: center; justify-content: center; }
+        .security-center img { width: 140px; height: 140px; object-fit: contain; border-radius: 0; border: none; box-shadow: none; background: transparent; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .tech-section, .core-section, .use-cases-section { padding: var(--section-gap-tablet) 30px; }
+            .sticky-scroll-section { padding: var(--section-gap-tablet) 0; }
+            .tech-heading, .core-heading, .use-cases-heading, .sticky-scroll-heading h2, .tech-stack-section h2, .security-section h2 { font-size: 32px; }
+            .use-cases-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .security-grid { grid-template-columns: 1fr; gap: 20px; }
+            .security-left, .security-right { align-items: center; padding-left: 0; }
+            .security-item { max-width: 380px; text-align: center; }
+            .security-center img { width: 100px; height: 100px; }
+            .sticky-scroll-card { flex-direction: column; height: auto; max-height: none; border: none; }
+            .sticky-left { flex: 0 0 auto; flex-direction: row; flex-wrap: wrap; padding: 16px 20px; gap: 4px; justify-content: center; border-right: none; border-bottom: 2px solid #e2e8f0; }
+            .sticky-left .title-item { font-size: 13px; padding: 8px 12px; border-right: none; border-bottom: 3px solid transparent; flex: 1 0 auto; text-align: center; justify-content: center; cursor: pointer; }
+            .sticky-left .title-item.active { border-right: none; border-bottom-color: #0ea5e9; }
+            .sticky-left .title-item:not(:last-child) { border-bottom: 3px solid transparent; }
+            .sticky-left .title-item .num { display: none; }
+            .sticky-right { padding: 28px 20px; }
+            .sticky-right .content-panel h3 { font-size: 28px; }
+            .sticky-right .content-panel p { font-size: 16px; max-width: 100%; }
+            .sticky-scroll-wrapper { top: 70px; height: auto; min-height: 100vh; padding: 20px; align-items: flex-start; }
+            .sticky-scroll-section { min-height: auto; }
+            /* Core components: 2 columns with gap */
+            .core-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .core-row { display: contents; }
+            .core-card, .core-card-face { border-radius: 18px; }
+            .core-card {
+                width: auto;
+                min-height: 220px;
+            }
+            .core-card-front { padding: 20px; }
+            .core-card[data-index="0"] { grid-column: 1 / 2; grid-row: 1; }
+            .core-card[data-index="1"] { grid-column: 2 / 3; grid-row: 1; }
+            .core-card[data-index="2"] { grid-column: 1 / 2; grid-row: 2; }
+            .core-card[data-index="3"] { grid-column: 2 / 3; grid-row: 2; }
+            .core-card[data-index="4"] { grid-column: 1 / 3; grid-row: 3; }
+            .el__index-number { font-size: 110px; }
+            .el { min-height: 280px; margin-bottom: 30px; }
+            .logo-item i { font-size: 30px; }
+            .logo-item .logo-label { font-size: 10px; }
+            .logo-scroll-track { gap: 30px; }
+            .hero-collage { max-height: 280px; min-height: 180px; }
+        }
+        @media (max-width: 768px) {
+            .tech-section, .core-section, .use-cases-section { padding: var(--section-gap-mobile) 16px; }
+            .sticky-scroll-section { padding: var(--section-gap-mobile) 0; }
+            .tech-heading, .core-heading, .use-cases-heading, .sticky-scroll-heading h2, .tech-stack-section h2, .security-section h2 { font-size: 26px; }
+            .use-cases-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+            .use-case-card { min-height: 200px; padding: 18px; }
+            .use-case-content h4 { font-size: 18px; }
+            .use-case-content p { font-size: 13px; }
+            .cont__inner { gap: 8px; flex-wrap: nowrap; min-height: 280px; }
+            .el { min-height: 200px; margin-bottom: 24px; }
+            .el__heading { font-size: 12px; letter-spacing: 1px; }
+            .el__index-number { font-size: 80px; }
+            .el__text { font-size: 22px; }
+            .el__content { padding: 24px; }
+            .el__index { bottom: -20px; }
+            .sticky-left .title-item { font-size: 11px; padding: 6px 8px; }
+            .sticky-right .content-panel h3 { font-size: 22px; }
+            .sticky-right .content-panel p { font-size: 14px; }
+            .tech-stack-section h2, .security-section h2 { font-size: 26px; }
+            .logo-scroll-track { gap: 20px; }
+            .logo-item i { font-size: 24px; }
+            .logo-item .logo-label { font-size: 9px; }
+            .security-center img { width: 80px; height: 80px; }
+            /* Core components: single column */
+            .core-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .core-card, .core-card-face { border-radius: 16px; }
+            .core-card {
+                min-height: 180px;
+            }
+            .core-card[data-index="0"],
+            .core-card[data-index="1"],
+            .core-card[data-index="2"],
+            .core-card[data-index="3"],
+            .core-card[data-index="4"] {
+                grid-column: 1;
+                grid-row: auto;
+            }
+            .hero-collage { max-height: 200px; min-height: 140px; }
+        }
+        @media (max-width: 480px) {
+            .use-cases-grid { grid-template-columns: 1fr; max-width: 380px; margin: 0 auto; }
+            .use-case-card { min-height: 160px; }
+            .tech-heading, .core-heading, .use-cases-heading, .sticky-scroll-heading h2, .tech-stack-section h2, .security-section h2 { font-size: 22px; }
+            .el__heading { font-size: 9px; letter-spacing: 0px; }
+            .cont__inner { gap: 6px; min-height: 200px; }
+            .el { min-height: 150px; margin-bottom: 20px; }
+            .el__index-number { font-size: 50px; }
+            .el__index { bottom: -16px; }
+            .sticky-left .title-item { font-size: 10px; padding: 4px 6px; }
+            .sticky-right .content-panel h3 { font-size: 18px; }
+            .sticky-right .content-panel p { font-size: 13px; }
+            .logo-scroll-track { gap: 14px; }
+            .logo-item i { font-size: 20px; }
+            .logo-item .logo-label { font-size: 7px; }
+            .logo-item { padding: 4px 6px; min-width: 40px; }
+            .security-center img { width: 60px; height: 60px; }
+            .core-card { min-height: 150px; }
+            .core-card-front, .core-card-back { padding: 16px; }
+            .core-card h4 { font-size: 16px; }
+            .core-card-back p { font-size: 13px; }
+            .hero-collage { max-height: 160px; min-height: 120px; }
+        }
+        .cont.s--inactive .el { transform: translateY(100%); opacity: 0; }
+        .cont.s--inactive .el__index-number { opacity: 0; }
+        .cont:not(.s--inactive) .el { transform: translateY(0); opacity: 1; transition: all 0.8s cubic-bezier(0.4,0,0.2,1); }
+        .cont:not(.s--inactive) .el:nth-child(1) { transition-delay: 0.05s; }
+        .cont:not(.s--inactive) .el:nth-child(2) { transition-delay: 0.1s; }
+        .cont:not(.s--inactive) .el:nth-child(3) { transition-delay: 0.15s; }
+        .cont:not(.s--inactive) .el:nth-child(4) { transition-delay: 0.2s; }
+        .cont:not(.s--inactive) .el:nth-child(5) { transition-delay: 0.25s; }
+        .cont:not(.s--inactive) .el:nth-child(6) { transition-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <!-- ====== NAVBAR ====== -->
+    <nav class="navbar fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center gap-x-3 shrink-0 hover:opacity-90 transition">
+                    <img src="images/Logo.png" alt="DeltaMax Logo" class="w-9 h-9 rounded-2xl shadow-md object-cover" />
+                    <span class="text-2xl font-semibold tracking-tighter text-gray-900">DeltaMax</span>
+                </a>
+                <div class="hidden md:flex items-center gap-x-8 text-sm font-medium text-gray-600 absolute left-1/2 -translate-x-1/2">
+                    <a href="index.html" class="nav-link hover:text-blue-700">Home</a>
+                    <a href="about.html" class="nav-link hover:text-blue-700">About</a>
+                    <a href="competitive_intel.html" class="nav-link hover:text-blue-700">Competitive Intel</a>
+                    <div class="dropdown group">
+                        <button onclick="toggleDropdown(this)" class="nav-link hover:text-blue-700 flex items-center gap-1">
+                            Buy Product <i class="fas fa-chevron-down text-xs transition-transform"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-9 h-9"><rect x="1" y="1" width="10" height="10" fill="#F25022"/><rect x="12" y="1" width="10" height="10" fill="#7FBA00"/><rect x="1" y="12" width="10" height="10" fill="#00A4EF"/><rect x="12" y="12" width="10" height="10" fill="#FFB900"/></svg>
+                            </a>
+                            <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-9 h-9"><text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text><path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/></svg>
+                            </a>
+                            <a href="https://console.cloud.google.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Google Cloud Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-9 h-9"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                    <button onclick="window.location.href='schedule.html'" class="flex items-center gap-x-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40">
+                        <i class="far fa-calendar-alt"></i> <span>Schedule Demo</span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-x-5 ml-auto shrink-0">
+                    <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+                        <img src="images/katalyst_logo.png" alt="Katalyst Street" class="h-9 w-auto object-contain rounded-lg" />
+                    </a>
+                    <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+                        <img src="images/neualto_logo.png" alt="NeuAlto" class="h-9 w-auto object-contain" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ====== HERO SECTION ====== -->
+    <section class="hero-bg">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
+                <div class="space-y-8">
+                    <h1 class="text-5xl lg:text-6xl leading-tight font-bold text-slate-900 tracking-tighter">
+                        Why <span class="text-sky-600">DeltaMax</span>?
+                    </h1>
+                    <p class="text-xl text-slate-700 max-w-lg">
+                        DeltaMax is a comprehensive Data Quality Intelligence platform that helps organizations detect anomalies, monitor data drift, validate business rules and compute trust scores across data pipelines and systems in real-time.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="bg-white rounded-3xl px-6 py-4 shadow-sm border border-slate-100 hover:shadow-md transition-all h-full">
+                            <div class="flex items-center gap-4 mb-2">
+                                <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center"><i class="fas fa-chart-line text-xl"></i></div>
+                                <p class="font-semibold text-sm text-slate-900">AI/ML Powered</p>
+                            </div>
+                            <p class="text-slate-600 text-sm leading-snug">Advanced algorithms for anomaly detection & forecasting.</p>
+                        </div>
+                        <div class="bg-white rounded-3xl px-6 py-4 shadow-sm border border-slate-100 hover:shadow-md transition-all h-full">
+                            <div class="flex items-center gap-4 mb-2">
+                                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center"><i class="fas fa-bolt text-xl"></i></div>
+                                <p class="font-semibold text-sm text-slate-900">End-to-End Monitoring</p>
+                            </div>
+                            <p class="text-slate-600 text-sm leading-snug">From ingestion to consumption across data platforms.</p>
+                        </div>
+                        <div class="bg-white rounded-3xl px-6 py-4 shadow-sm border border-slate-100 hover:shadow-md transition-all h-full">
+                            <div class="flex items-center gap-4 mb-2">
+                                <div class="w-12 h-12 bg-violet-100 text-violet-600 rounded-2xl flex items-center justify-center"><i class="fas fa-cloud text-xl"></i></div>
+                                <p class="font-semibold text-sm text-slate-900">Trust & Transparency</p>
+                            </div>
+                            <p class="text-slate-600 text-sm leading-snug">Quantified trust scores and actionable insights.</p>
+                        </div>
+                        <div class="bg-white rounded-3xl px-6 py-4 shadow-sm border border-slate-100 hover:shadow-md transition-all h-full">
+                            <div class="flex items-center gap-4 mb-2">
+                                <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center"><i class="fas fa-bell text-xl"></i></div>
+                                <p class="font-semibold text-sm text-slate-900">Scalable & Cloud Native</p>
+                            </div>
+                            <p class="text-slate-600 text-sm leading-snug">Built for scale on modern cloud infrastructures.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-collage">
+                    <div class="hero-collage-card"><img src="images/aiml.png" alt="AI/ML" /></div>
+                    <div class="hero-collage-card"><img src="images/cloud.png" alt="Cloud" /></div>
+                    <div class="hero-collage-card"><img src="images/trust.png" alt="Trust" /></div>
+                    <div class="hero-collage-card hero-highlight"><img src="images/security.png" alt="Security" /></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== PLATFORM ARCHITECTURE ====== -->
+    <section class="tech-section">
+        <h2 class="tech-heading">Platform Architecture</h2>
+        <div class="cont s--inactive">
+            <div class="cont__inner">
+                <div class="el" data-section="1">
+                    <div class="el__bg"></div>
+                    <div class="el__preview-cont"><h2 class="el__heading">DATA SOURCE</h2></div>
+                    <div class="el__content">
+                        <div class="el__text">Data Sources</div>
+                        <div class="el__details">
+                            <p style="color:rgba(255,255,255,0.9); margin-bottom:0.5rem;">DeltaMax connects to a wide variety of data sources 
+                            including relational databases, data warehouses, data lakes, enterprise applications, flat files, and REST APIs. 
+                            Our platform supports both cloud-native and on-premise data sources, ensuring seamless integration with your existing 
+                            infrastructure. We provide native connectors for popular databases like PostgreSQL, MySQL, Oracle, and SQL Server, as 
+                            well as cloud platforms including AWS, Azure, and GCP. The platform automatically discovers and catalogs available data assets, 
+                            creating a comprehensive inventory of your data landscape. With support for structured, semi-structured, and unstructured data, 
+                            DeltaMax ensures no data source is left unmonitored. This flexible connectivity layer forms the foundation for comprehensive 
+                            end-to-end data quality monitoring across your entire organization.</p>
+                        </div>
+                        <div class="el__close-btn"></div>
+                    </div>
+                    <div class="el__index"><span class="el__index-number">1</span></div>
+                </div>
+                <div class="el" data-section="2">
+                    <div class="el__bg"></div>
+                    <div class="el__preview-cont"><h2 class="el__heading">INGESTION LAYER</h2></div>
+                    <div class="el__content">
+                        <div class="el__text">Ingestion Layer</div>
+                        <div class="el__details">
+                            <p style="color:rgba(255,255,255,0.9); margin-bottom:0.5rem;">The ingestion layer handles both batch and streaming data ingestion, 
+                            processing millions of records per minute with low latency. Automatic schema inference and validation ensure that incoming data structures 
+                            are properly understood and any schema changes are detected immediately. The platform performs initial data profiling during ingestion, 
+                            calculating basic statistics like row counts, null percentages, unique values, and data type distributions. For streaming data, we support 
+                            real-time ingestion through technologies like Apache Kafka, AWS Kinesis, and Google Pub/Sub, enabling instant quality validation. Incremental 
+                            ingestion capabilities minimize resource usage by processing only changed data, while full refresh options are available for historical 
+                            analysis. This layer ensures that data is reliably captured and prepared for quality analysis before it enters your data pipelines.</p>
+
+                        </div>
+                        <div class="el__close-btn"></div>
+                    </div>
+                    <div class="el__index"><span class="el__index-number">2</span></div>
+                </div>
+                <div class="el" data-section="3">
+                    <div class="el__bg"></div>
+                    <div class="el__preview-cont"><h2 class="el__heading">PROCESSING & ANALYSIS</h2></div>
+                    <div class="el__content">
+                        <div class="el__text">Processing &amp; Analysis</div>
+                        <div class="el__details">
+                            <p style="color:rgba(255,255,255,0.9); margin-bottom:0.5rem;">The processing engine executes comprehensive data quality 
+                            checks including completeness,uniqueness, consistency, accuracy, and validity validations against your datasets. 
+                            Machine learning algorithms detect anomalous patterns and outliers, automatically learning the normal behavior of 
+                            your data over time. Statistical drift detection using Population Stability Index (PSI) and Kolmogorov-Smirnov (KS) 
+                            tests continuously monitor for data distribution changes. A flexible business rule engine allows you to define custom 
+                            validation rules using a simple DSL, enabling domain-specific quality requirements. The engine performs both rule-based 
+                            and ML-based validation in parallel, providing a holistic view of data health. All processing is distributed and scalable, 
+                            handling petabytes of data across thousands of tables without performance degradation.</p>
+                        </div>
+                        <div class="el__close-btn"></div>
+                    </div>
+                    <div class="el__index"><span class="el__index-number">3</span></div>
+                </div>
+                <div class="el" data-section="4">
+                    <div class="el__bg"></div>
+                    <div class="el__preview-cont"><h2 class="el__heading">TRUST & SCORE ENGINE</h2></div>
+                    <div class="el__content">
+                        <div class="el__text">Trust &amp; Scoring</div>
+                        <div class="el__details">
+                            <p style="color:rgba(255,255,255,0.9); margin-bottom:0.5rem;">The scoring engine computes five key metrics: Anomaly Score, Drift Score, 
+                                Business Score, Freshness Score, and the overall Trust Score, providing a single source of truth for data reliability. Each score is 
+                                calculated using weighted algorithms that consider historical patterns, rule violations, and data timeliness. Anomaly Scores flag unusual 
+                                data points that deviate from expected statistical distributions, while Drift Scores quantify how much dataset characteristics have changed 
+                                over time. Business Scores measure adherence to your specific data quality rules and compliance requirements, customizable for different 
+                                business domains. Freshness Scores monitor data latency and update frequency, ensuring your analytics are based on current information. 
+                                The final Trust Score is a comprehensive 0-100 metric that gives stakeholders an instant understanding of data quality health across your 
+                                entire data ecosystem.</p>
+                        </div>
+                        <div class="el__close-btn"></div>
+                    </div>
+                    <div class="el__index"><span class="el__index-number">4</span></div>
+                </div>
+                <div class="el" data-section="5">
+                    <div class="el__bg"></div>
+                    <div class="el__preview-cont"><h2 class="el__heading">STORAGE LAYER</h2></div>
+                    <div class="el__content">
+                        <div class="el__text">Storage Layer</div>
+                        <div class="el__details">
+                            <p style="color:rgba(255,255,255,0.9); margin-bottom:0.5rem;">he storage layer provides persistent, optimized storage for metadata, quality results, 
+                            and data lineage information. The Metadata Store maintains comprehensive information about your data assets including schemas, relationships, 
+                            statistics, and historical snapshots. The Results Store preserves all quality check results, scores, and anomalies for historical trending 
+                            and compliance auditing, with configurable retention policies. The Lineage Store tracks data movement and transformation paths across your 
+                            pipelines, providing full visibility into data provenance and downstream dependencies. This layered storage approach ensures that your quality 
+                            monitoring data is always available for analysis, reporting, and compliance verification.</p>
+                        </div>
+                        <div class="el__close-btn"></div>
+                    </div>
+                    <div class="el__index"><span class="el__index-number">5</span></div>
+                </div>
+                <div class="el" data-section="6">
+                    <div class="el__bg"></div>
+                    <div class="el__preview-cont"><h2 class="el__heading">VISUALIZE & ALERTS</h2></div>
+                    <div class="el__content">
+                        <div class="el__text">Visualize &amp; Alerts</div>
+                        <div class="el__details">
+                            <p style="color:rgba(255,255,255,0.9); margin-bottom:0.5rem;">The visualization layer provides interactive dashboards with real-time 
+                                data quality metrics, trend analysis, and drill-down capabilities for detailed investigation. Automated reports can be scheduled and 
+                                distributed to stakeholders, providing regular updates on data health across departments. Intelligent alerting systems notify data 
+                                engineers and business users of quality issues.</p>
+                        </div>
+                        <div class="el__close-btn"></div>
+                    </div>
+                    <div class="el__index"><span class="el__index-number">6</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== CORE TECHNICAL COMPONENTS – 2 + 3 pyramid, image cards ====== -->
+    <section class="core-section">
+        <h2 class="core-heading">Core <span>Technical Components</span></h2>
+        <div class="core-wrapper">
+            <div class="core-grid">
+                <div class="core-row">
+                    <div class="core-card" data-index="0">
+                        <div class="core-card-flip">
+                            <div class="core-card-face core-card-front" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=700&q=80');">
+                                <div class="core-card-content"><h4>Data Quality Checks</h4></div>
+                            </div>
+                            <div class="core-card-face core-card-back">
+                                <span class="num">01</span>
+                                <h4>Data Quality Checks</h4>
+                                <p>Automated validation catches missing values, format errors, and schema violations before they reach downstream systems.</p>
+                                <span class="close-hint"><i class="fas fa-rotate-left"></i> Click to flip back</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="core-card" data-index="1">
+                        <div class="core-card-flip">
+                            <div class="core-card-face core-card-front" style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=700&q=80');">
+                                <div class="core-card-content"><h4>Anomaly Detection</h4></div>
+                            </div>
+                            <div class="core-card-face core-card-back">
+                                <span class="num">02</span>
+                                <h4>Anomaly Detection</h4>
+                                <p>ML-based models flag unusual patterns and outliers in your data streams in real time, before they impact decisions.</p>
+                                <span class="close-hint"><i class="fas fa-rotate-left"></i> Click to flip back</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="core-row">
+                    <div class="core-card" data-index="2">
+                        <div class="core-card-flip">
+                            <div class="core-card-face core-card-front" style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=700&q=80');">
+                                <div class="core-card-content"><h4>Data Drift Detection</h4></div>
+                            </div>
+                            <div class="core-card-face core-card-back">
+                                <span class="num">03</span>
+                                <h4>Data Drift Detection</h4>
+                                <p>Tracks schema and distribution changes automatically using PSI and KS-test statistics to catch drift early.</p>
+                                <span class="close-hint"><i class="fas fa-rotate-left"></i> Click to flip back</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="core-card" data-index="3">
+                        <div class="core-card-flip">
+                            <div class="core-card-face core-card-front" style="background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=700&q=80');">
+                                <div class="core-card-content"><h4>Business Rule Engine</h4></div>
+                            </div>
+                            <div class="core-card-face core-card-back">
+                                <span class="num">04</span>
+                                <h4>Business Rule Engine</h4>
+                                <p>Create and enforce reusable validation rules and governance policies that keep every pipeline accurate and compliant.</p>
+                                <span class="close-hint"><i class="fas fa-rotate-left"></i> Click to flip back</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="core-card" data-index="4">
+                        <div class="core-card-flip">
+                            <div class="core-card-face core-card-front" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=700&q=80');">
+                                <div class="core-card-content"><h4>Trust Score Model</h4></div>
+                            </div>
+                            <div class="core-card-face core-card-back">
+                                <span class="num">05</span>
+                                <h4>Trust Score Model</h4>
+                                <p>A composite trust score blends anomaly, drift, business, and freshness metrics into one number for every dataset.</p>
+                                <span class="close-hint"><i class="fas fa-rotate-left"></i> Click to flip back</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== USE CASES ====== -->
+    <section class="use-cases-section">
+        <h2 class="use-cases-heading">Use <span>Cases</span></h2>
+        <p class="use-cases-sub">Real-world applications of DeltaMax data quality platform</p>
+        <div class="use-cases-grid">
+            <div class="use-case-card" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80');">
+                <div class="bg-blur" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80');"></div>
+                <div class="use-case-content">
+                    <h4>Enterprise Data Quality Monitoring</h4>
+                    <p>Ensure regulatory compliance and detect fraud with real-time data validation and anomaly detection.</p>
+                </div>
+            </div>
+            <div class="use-case-card" style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80');">
+                <div class="bg-blur" style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80');"></div>
+                <div class="use-case-content">
+                    <h4>Migration & Modernization Validation</h4>
+                    <p>Maintain patient data integrity, monitor data drift, and ensure timely insights for clinical decisions.</p>
+                </div>
+            </div>
+            <div class="use-case-card" style="background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&q=80');">
+                <div class="bg-blur" style="background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&q=80');"></div>
+                <div class="use-case-content">
+                    <h4>Regulatory Reporting & Compliance</h4>
+                    <p>Optimize inventory and customer personalization by tracking data freshness and anomaly alerts.</p>
+                </div>
+            </div>
+            <div class="use-case-card" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80');">
+                <div class="bg-blur" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80');"></div>
+                <div class="use-case-content">
+                    <h4>Operational Excellence & Data Trust</h4>
+                    <p>Monitor data quality across suppliers and logistics pipelines to reduce delays and improve forecasting.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== STICKY SCROLL ====== -->
+    <section class="sticky-scroll-section" id="stickyScrollSection">
+        <div class="sticky-scroll-heading">
+            <h2>Dataflow Overview</h2>
+        </div>
+        <div class="sticky-scroll-wrapper">
+            <div class="sticky-scroll-card">
+                <div class="sticky-left">
+                    <div class="title-item active" data-index="0"><span class="num">01</span> Ingest Data</div>
+                    <div class="title-item" data-index="1"><span class="num">02</span> Profile & Monitor</div>
+                    <div class="title-item" data-index="2"><span class="num">03</span> Analyze & Detect</div>
+                    <div class="title-item" data-index="3"><span class="num">04</span> Score & Validate</div>
+                    <div class="title-item" data-index="4"><span class="num">05</span> Visualize & Alert</div>
+                </div>
+                <div class="sticky-right">
+                    <div class="content-panel active" data-index="0">
+                        <h3>Ingest Data</h3>
+                        <p>The foundation of the DeltaMax workflow begins with the Ingestion Layer, designed to handle both batch and streaming data at scale. This stage connects to a wide variety of sources, including databases, data warehouses, data lakes, and applications . The platform performs automatic schema inference and data profiling during ingestion, calculating key statistics like row counts, null percentages, and data type distributions . It supports incremental processing to minimize resource usage and is built to handle petabyte-scale environments like Google Cloud's BigQuery</p>
+                    </div>
+                    <div class="content-panel" data-index="1">
+                        <h3>Profile & Monitor</h3>
+                        <p>After ingestion, the Processing & Analysis Engine immediately begins profiling the data to establish a baseline of normal behavior—its unique "data rhythm" . This involves monitoring for completeness, uniqueness, consistency, and accuracy. By creating this baseline, the platform can differentiate between routine fluctuations and true anomalies, which significantly reduces alert fatigue . This continuous monitoring ensures that any deviation from the established pattern is automatically flagged for further analysis </p>
+                    </div>
+                    <div class="content-panel" data-index="2">
+                        <h3>Analyze & Detect</h3>
+                        <p>This stage is where DeltaMax's AI-powered anomaly detection comes into play, going beyond traditional rule-based checks . Using a combination of statistical methods like the Interquartile Range (IQR) method and advanced machine learning algorithms like Isolation Forest, the platform automatically identifies hidden issues and outliers . It also performs drift detection using statistical methods like the Population Stability Index (PSI) and T-tests to identify significant shifts in data distributions that might not be apparent through simple rules . This proactive approach uncovers the "unknown unknowns" that typically cause major data quality issues </p>
+                    </div>
+                    <div class="content-panel" data-index="3">
+                        <h3>Score & Validate</h3>
+                        <p>At the heart of DeltaMax's decision-making is the Trust & Scoring Engine, which quantifies data reliability into an actionable metric . This engine combines all signals from prior stages—anomalies, drift metrics, business rule violations, and data freshness—into a comprehensive, interpretable Trust Score (0-100) . It validates data against business rules and provides an "Agent Summary" that explains exactly what changed, where, and its potential impact, removing ambiguity and enabling faster, more confident decisions </p>
+\                    </div>
+                    <div class="content-panel" data-index="4">
+                        <h3>Visualize & Alert</h3>
+                        <p>The final step transforms raw quality metrics into actionable intelligence through the Visualization & Alerts layer. The results are loaded into BigQuery and connected to dashboards (e.g., in Looker Studio) for real-time visualization of data health and trends . The platform's intelligent alerting system notifies engineers and stakeholders of critical issues via email, Slack, or webhooks, ensuring prompt resolution. Crucially, automated reason codes are generated to classify discrepancies, moving beyond simple difference counts to explain why records are different, drastically reducing investigation time </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== TECH STACK ====== -->
+    <section class="tech-stack-section">
+        <h2>Tech <span>Stack</span></h2>
+        <p class="sub">Powered by industry-leading technologies</p>
+        <div class="logo-scroll-wrapper">
+            <div class="logo-scroll-track">
+                <div class="logo-item"><i class="fab fa-python"></i><span class="logo-label">Python</span></div>
+                <div class="logo-item"><i class="fas fa-bolt" style="color:#009688;"></i><span class="logo-label">FastAPI</span></div>
+                <div class="logo-item"><i class="fas fa-chart-line" style="color:#f7931e;"></i><span class="logo-label">Scikit-learn</span></div>
+                <div class="logo-item"><i class="fas fa-fire" style="color:#e25a1c;"></i><span class="logo-label">Spark</span></div>
+                <div class="logo-item"><i class="fas fa-table" style="color:#150458;"></i><span class="logo-label">Pandas</span></div>
+                <div class="logo-item"><i class="fas fa-database" style="color:#4285F4;"></i><span class="logo-label">BigQuery</span></div>
+                <div class="logo-item"><i class="fab fa-react"></i><span class="logo-label">React</span></div>
+                <div class="logo-item"><i class="fas fa-chart-pie" style="color:#FF6384;"></i><span class="logo-label">Chart.js</span></div>
+                <div class="logo-item"><i class="fas fa-database" style="color:#336791;"></i><span class="logo-label">PostgreSQL</span></div>
+                <div class="logo-item"><i class="fab fa-docker"></i><span class="logo-label">Docker</span></div>
+                <div class="logo-item"><i class="fas fa-cloud" style="color:#4285F4;"></i><span class="logo-label">GCP</span></div>
+                <div class="logo-item"><i class="fas fa-exchange-alt" style="color:#34A853;"></i><span class="logo-label">Pub/Sub</span></div>
+                <div class="logo-item"><i class="fab fa-python"></i><span class="logo-label">Python</span></div>
+                <div class="logo-item"><i class="fas fa-bolt" style="color:#009688;"></i><span class="logo-label">FastAPI</span></div>
+                <div class="logo-item"><i class="fas fa-chart-line" style="color:#f7931e;"></i><span class="logo-label">Scikit-learn</span></div>
+                <div class="logo-item"><i class="fas fa-fire" style="color:#e25a1c;"></i><span class="logo-label">Spark</span></div>
+                <div class="logo-item"><i class="fas fa-table" style="color:#150458;"></i><span class="logo-label">Pandas</span></div>
+                <div class="logo-item"><i class="fas fa-database" style="color:#4285F4;"></i><span class="logo-label">BigQuery</span></div>
+                <div class="logo-item"><i class="fab fa-react"></i><span class="logo-label">React</span></div>
+                <div class="logo-item"><i class="fas fa-chart-pie" style="color:#FF6384;"></i><span class="logo-label">Chart.js</span></div>
+                <div class="logo-item"><i class="fas fa-database" style="color:#336791;"></i><span class="logo-label">PostgreSQL</span></div>
+                <div class="logo-item"><i class="fab fa-docker"></i><span class="logo-label">Docker</span></div>
+                <div class="logo-item"><i class="fas fa-cloud" style="color:#4285F4;"></i><span class="logo-label">GCP</span></div>
+                <div class="logo-item"><i class="fas fa-exchange-alt" style="color:#34A853;"></i><span class="logo-label">Pub/Sub</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== SECURITY & COMPLIANCE ====== -->
+    <section class="security-section" id="securitySection">
+        <h2>Security &amp; <span>Compliance</span></h2>
+        <p class="sub">Enterprise-grade security standards across the board</p>
+        <div class="security-grid">
+            <div class="security-left">
+                <div class="security-item" data-index="0">
+                    <span class="icon"><i class="fas fa-shield-alt"></i></span>
+                    <h4>Role Based </h4>
+                    <p>Full compliance with GDPR data protection requirements across all regions.</p>
+                </div>
+                <div class="security-item" data-index="2">
+                    <span class="icon"><i class="fas fa-lock"></i></span>
+                    <h4>End-to-End Encryption</h4>
+                    <p>All data encrypted in transit and at rest with industry-standard AES-256.</p>
+                </div>
+            </div>
+            <div class="security-center">
+                <img src="images/logo (2).png" alt="Security Center" />
+            </div>
+            <div class="security-right">
+                <div class="security-item" data-index="1">
+                    <span class="icon"><i class="fas fa-certificate"></i></span>
+                    <h4>ISO 27001 Certified</h4>
+                    <p>Internationally recognized standard for information security management.</p>
+                </div>
+                <div class="security-item" data-index="3">
+                    <span class="icon"><i class="fas fa-user-shield"></i></span>
+                    <h4>RBAC &amp; SSO</h4>
+                    <p>Role-based access control with single sign-on for enterprise teams.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-[var(--cream)] border-t border-slate-200 text-[var(--gray-soft)] py-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-10">
+                <div>
+                    <div class="flex items-center gap-3 text-[var(--dark)] mb-4">
+                        <img src="images/Logo.png" alt="DeltaMax Logo" class="w-8 h-8 rounded-2xl shadow-md object-cover">
+                        <span class="text-2xl font-semibold">DeltaMax</span>
+                    </div>
+                </div>
+                <div class="text-base">
+                    <div class="font-semibold text-[var(--dark)] mb-4 text-lg">Quick Links</div>
+                    <a href="index.html" class="block hover:text-[var(--primary)] mb-2.5">Home</a>
+                    <a href="about.html" class="block hover:text-[var(--primary)] mb-2.5">About</a>
+                    <a href="competitive_intel.html" class="block hover:text-[var(--primary)] mb-5">Competitive Intel</a>
+                    <div class="flex items-center gap-4">
+                        <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-8 h-8"><rect x="1" y="1" width="10" height="10" fill="#F25022"/><rect x="12" y="1" width="10" height="10" fill="#7FBA00"/><rect x="1" y="12" width="10" height="10" fill="#00A4EF"/><rect x="12" y="12" width="10" height="10" fill="#FFB900"/></svg>
+                        </a>
+                        <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-8 h-8"><text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text><path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/></svg>
+                        </a>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-8 h-8">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-base">
+                    <div class="font-semibold text-[var(--dark)] mb-4 text-lg">Get in Touch</div>
+                    <a href="mailto:contact@katalyststreet.com" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+                        <i class="far fa-envelope text-[var(--primary)]"></i> contact@katalyststreet.com
+                    </a>
+                    <a href="https://www.linkedin.com/company/katalyst-street" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)]">
+                        <i class="fab fa-linkedin text-[var(--primary)]"></i> KatalystStreet
+                    </a>
+                    <a href="https://www.linkedin.com/company/neualto-technologies-pvt-ltd" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+                        <i class="fab fa-linkedin text-[var(--primary)]"></i> NeuAlto
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-slate-200 mt-8 pt-5 text-center text-sm">
+                © <span id="copyright-year"></span>
+                <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] underline-offset-2 hover:underline">NeuAlto</a>
+                and
+                <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] underline-offset-2 hover:underline">KatalystStreet</a>.
+                All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            dropdown.classList.toggle('active');
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            }
+        });
+
+        // Expandable sections
+        (function() {
+            const $cont = document.querySelector('.cont');
+            const $els = document.querySelectorAll('.el');
+            const $closeBtns = document.querySelectorAll('.el__close-btn');
+
+            setTimeout(function() { $cont.classList.remove('s--inactive'); }, 200);
+
+            $els.forEach(function($el) {
+                $el.addEventListener('click', function(e) {
+                    if (e.target.closest('.el__close-btn')) return;
+                    if (this.classList.contains('s--active')) return;
+                    $els.forEach(el => el.classList.remove('s--active'));
+                    this.classList.add('s--active');
+                    $cont.classList.add('s--el-active');
+                });
+            });
+
+            $closeBtns.forEach(function($btn) {
+                $btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    $cont.classList.remove('s--el-active');
+                    $els.forEach(el => el.classList.remove('s--active'));
+                });
+            });
+
+            $cont.addEventListener('click', function(e) {
+                if (e.target === this || e.target === this.querySelector('.cont__inner')) {
+                    $cont.classList.remove('s--el-active');
+                    $els.forEach(el => el.classList.remove('s--active'));
+                }
+            });
+        })();
+
+        // Core component flip cards
+        (function() {
+            const cards = document.querySelectorAll('.core-card');
+            cards.forEach(function(card) {
+                card.addEventListener('click', function() {
+                    const isOpening = !this.classList.contains('flipped');
+                    if (isOpening) {
+                        cards.forEach(c => c.classList.remove('flipped'));
+                    }
+                    this.classList.toggle('flipped', isOpening);
+                });
+            });
+        })();
+
+        // Sticky scroll
+        (function() {
+            const section = document.getElementById('stickyScrollSection');
+            const titles = document.querySelectorAll('.sticky-left .title-item');
+            const panels = document.querySelectorAll('.sticky-right .content-panel');
+            const total = titles.length;
+            let activeIndex = -1;
+            if (!section || titles.length === 0) return;
+
+            titles.forEach((title, idx) => {
+                title.addEventListener('click', function() {
+                    updateActive(idx);
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+
+            const updateActive = (index) => {
+                if (index < 0) index = 0;
+                if (index >= total) index = total - 1;
+                if (index === activeIndex) return;
+                titles.forEach((t, i) => t.classList.toggle('active', i === index));
+                panels.forEach((p, i) => p.classList.toggle('active', i === index));
+                activeIndex = index;
+            };
+
+            const handleScroll = () => {
+                const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+                const sectionHeight = section.offsetHeight;
+                const start = sectionTop - window.innerHeight + 100;
+                const end = sectionTop + sectionHeight - 100;
+                const scrollY = window.scrollY;
+                if (scrollY < start) { updateActive(0); return; }
+                if (scrollY > end) { updateActive(total - 1); return; }
+                const distance = scrollY - start;
+                const stepSize = Math.max(window.innerHeight * 0.75, 300);
+                const index = Math.min(total - 1, Math.max(0, Math.floor(distance / stepSize)));
+                updateActive(index);
+            };
+
+            let ticking = false;
+            const onScroll = () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        handleScroll();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            };
+            window.addEventListener('scroll', onScroll, { passive: true });
+            setTimeout(handleScroll, 100);
+            window.addEventListener('resize', handleScroll, { passive: true });
+        })();
+
+        // Security section
+        (function() {
+            const section = document.getElementById('securitySection');
+            const items = document.querySelectorAll('.security-item');
+            if (!section || items.length === 0) return;
+            let revealed = new Set();
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target;
+                        const index = parseInt(target.dataset.index);
+                        setTimeout(() => {
+                            target.classList.add('visible');
+                            revealed.add(index);
+                        }, 120 * (index + 1));
+                    }
+                });
+            }, { threshold: 0.4 });
+            items.forEach(item => observer.observe(item));
+            const scrollCheck = () => {
+                items.forEach(item => {
+                    const rect = item.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 80 && rect.bottom > 0) {
+                        const index = parseInt(item.dataset.index);
+                        if (!revealed.has(index)) {
+                            setTimeout(() => {
+                                item.classList.add('visible');
+                                revealed.add(index);
+                            }, 120 * (index + 1));
+                        }
+                    }
+                });
+            };
+            window.addEventListener('scroll', scrollCheck, { passive: true });
+            setTimeout(scrollCheck, 200);
+        })();
+
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

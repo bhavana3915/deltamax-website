@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeltaMax - Contact Us</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{
+    --primary:#0EA5E9;
+    --primary-dark:#0284C7;
+    --dark:#0B2545;
+    --cream:#F8FAFC;
+    --gray-soft:#64748B;
+  }
+  *{ font-family:'Inter', sans-serif; }
+  body{ background:var(--cream); }
+
+  /* ===== Navbar (matches index.html exactly) ===== */
+  .navbar {
+      background: rgba(248, 250, 252, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+  }
+  .nav-link {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .nav-link:hover {
+      color: #1e40af;
+      transform: translateY(-1px);
+  }
+  .dropdown {
+      position: relative;
+  }
+  .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      padding: 16px;
+      z-index: 50;
+      min-width: 240px;
+  }
+  .dropdown:hover .dropdown-content,
+  .dropdown.active .dropdown-content {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+  }
+  .cloud-icon {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .cloud-icon:hover {
+      transform: scale(1.15);
+  }
+
+  /* ===== Footer (matches index.html: solid accent, same primary token) ===== */
+  footer{ --primary:#0369A1; }
+  .grad-bg-diag{ background: var(--primary); }
+
+  /* ===== Contact hero (single unified visual) ===== */
+  .contact-hero{
+    position:relative;
+    min-height:100vh;
+    padding-top:144px; /* navbar height offset */
+    background-color: var(--dark); /* fallback if images/contact.png is missing */
+    background-image:
+      linear-gradient(115deg, rgba(11,37,69,0.88) 0%, rgba(11,37,69,0.72) 42%, rgba(11,37,69,0.35) 68%, rgba(11,37,69,0.15) 100%),
+      url('images/contact.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display:flex;
+    align-items:center;
+  }
+
+  .contact-hero .wrap{
+    max-width:1500px; margin:0 auto; width:100%;
+    padding: 90px 0px 90px 24px;
+    display:grid; grid-template-columns: 0.9fr 1.35fr; gap:32px; align-items:center;
+  }
+
+  @media (max-width: 1024px){
+    .contact-hero .wrap{ grid-template-columns:1fr; padding: 90px 24px; }
+  }
+
+  .form-card-wrap{
+    display:flex;
+    justify-content:flex-end;
+  }
+
+  .badge-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.4);
+    color:#7DD3FC; font-size:0.75rem; font-weight:600; letter-spacing:.03em;
+    padding:6px 14px; border-radius:999px; text-transform:uppercase;
+  }
+
+  .form-card{
+    background:rgba(255,255,255,0.97);
+    border-radius:24px;
+    padding:2.25rem;
+    max-width:560px;
+    width:100%;
+    margin-left:auto;
+    margin-right:0;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+  }
+
+  .form-input{
+    width:100%; padding:0.85rem 1rem; border:1.5px solid #E2E8F0; border-radius:0.75rem;
+    font-size:0.95rem; color:var(--dark); background:#fff;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .form-input::placeholder{ color:#94A3B8; }
+  .form-input:focus{
+    outline:none; border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(14,165,233,0.15);
+  }
+  .form-label{ font-size:0.9rem; font-weight:600; color:var(--dark); margin-bottom:0.4rem; display:inline-block; }
+
+  .contact-point{
+    display:flex; align-items:center; gap:12px; color:#E2E8F0; font-size:0.95rem;
+  }
+  .contact-point i{
+    width:38px; height:38px; border-radius:10px; background:rgba(14,165,233,0.18);
+    display:flex; align-items:center; justify-content:center; color:#38BDF8; font-size:0.95rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center gap-x-3 shrink-0 hover:opacity-90 transition">
+                    <img 
+                        src="images/Logo.png" 
+                        alt="DeltaMax Logo" 
+                        class="w-9 h-9 rounded-2xl shadow-md object-cover"
+                    >
+                    <span class="text-2xl font-semibold tracking-tighter text-gray-900">DeltaMax</span>
+                </a>
+
+                <!-- Center Navigation Links -->
+                <div class="hidden md:flex items-center gap-x-8 text-sm font-medium text-gray-600 absolute left-1/2 -translate-x-1/2">
+                    <a href="index.html" class="nav-link hover:text-blue-700">Home</a>
+                    <a href="about.html" class="nav-link hover:text-blue-700">About</a>
+                    <a href="competitive_intel.html" class="nav-link hover:text-blue-700">Competitive Intel</a>
+                    
+                    <!-- Marketplace Dropdown -->
+                    <div class="dropdown group">
+                        <button onclick="toggleDropdown(this)" 
+                                class="nav-link hover:text-blue-700 flex items-center gap-1">
+                            Buy Product
+                            <i class="fas fa-chevron-down text-xs transition-transform"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-9 h-9">
+                                    <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+                                    <rect x="12" y="1" width="10" height="10" fill="#7FBA00"/>
+                                    <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
+                                    <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
+                                </svg>
+                            </a>
+                            <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-9 h-9">
+                                    <text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text>
+                                    <path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/>
+                                    <path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/>
+                                </svg>
+                            </a>
+                            <a href="https://console.cloud.google.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Google Cloud Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-9 h-9">
+                                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Demo (moved beside Marketplace) -->
+                    <button onclick="window.location.href='schedule.html'"
+                            class="flex items-center gap-x-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>Schedule Demo</span>
+                    </button>
+                </div>
+
+                <!-- Partner Logos (right side) -->
+                <div class="flex items-center gap-x-5 ml-auto shrink-0">
+                    <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+                        <img 
+                            src="images/katalyst_logo.png" 
+                            alt="Katalyst Street" 
+                            class="h-9 w-auto object-contain rounded-lg"
+                        >
+                    </a>
+                    <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+                        <img 
+                            src="images/neualto_logo.png" 
+                            alt="NeuAlto - Reach New Heights" 
+                            class="h-9 w-auto object-contain"
+                        >
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+<!-- ===== CONTACT HERO (single unified background image + floating form) ===== -->
+<section class="contact-hero">
+  <div class="wrap">
+
+    <!-- Left: headline over the background image -->
+    <div class="text-white">
+      <span class="badge-pill"><i class="fa-solid fa-headset"></i> Get in touch</span>
+      <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight mt-5 mb-5">
+        Let's talk about your <span style="color:#38BDF8;">data quality</span>
+      </h1>
+      <p class="text-slate-200 text-base sm:text-lg max-w-md mb-10">
+        Tell us about your pipelines and challenges — our team will get back to you within one business day with a tailored plan.
+      </p>
+
+      <div class="space-y-4">
+        <div class="contact-point">
+          <i class="fa-solid fa-envelope"></i>
+          <span>contact@katalyststreet.com</span>
+        </div>
+        <div class="contact-point">
+          <i class="fa-solid fa-phone"></i>
+          <span>+91 </span>
+        </div>
+        <a href="https://www.google.com/maps?q=42+Old+Kanakapura+Rd+near+Mecon+Limited+Basavanagudi+Bengaluru+Karnataka+560004" target="_blank" rel="noopener noreferrer" class="contact-point hover:opacity-80 transition cursor-pointer">
+          <i class="fa-solid fa-location-dot"></i>
+          <span></span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: form card floating on the same image -->
+    <div class="form-card">
+      <div class="mb-6">
+        <span class="inline-block text-xs font-bold tracking-wide uppercase px-3 py-1 rounded-full mb-3"
+              style="color:#0EA5E9; background:#E0F2FE;">Contact Form</span>
+        <h2 class="text-xl font-extrabold" style="color:var(--dark);">Send us a message</h2>
+        <p class="text-slate-500 mt-2 text-sm">Fields marked with * are required.</p>
+      </div>
+
+      <form id="contactForm" class="space-y-5">
+        <div id="form-status" class="text-sm min-h-5"></div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label class="form-label" for="fullName">Full Name <span class="text-red-500">*</span></label>
+            <input class="form-input" type="text" id="fullName" name="Full Name" placeholder="Enter your full name" required>
+          </div>
+          <div>
+            <label class="form-label" for="workEmail">Work Email <span class="text-red-500">*</span></label>
+            <input class="form-input" type="email" id="workEmail" name="Work Email" placeholder="your@company.com" required>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label class="form-label" for="phoneNumber">Phone Number <span class="text-red-500">*</span></label>
+            <input class="form-input" type="tel" id="phoneNumber" name="Phone Number" placeholder="10-digit mobile number" required>
+          </div>
+          <div>
+            <label class="form-label" for="companyName">Company Name <span class="text-red-500">*</span></label>
+            <input class="form-input" type="text" id="companyName" name="Company Name" placeholder="Enter your company name" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label" for="service">Service <span class="text-red-500">*</span></label>
+          <select class="form-input" id="service" name="Service" required>
+            <option value="" disabled selected>-- Select a service --</option>
+            <option value="Data Quality Monitoring">Data Quality Trust</option>
+            <option value="Master Data Management">Master Data Management</option>
+            <option value="Cloud Migration Validation">Cloud Migration Validation</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label" for="message">What would you like to discuss?</label>
+          <textarea class="form-input" id="message" name="Message" rows="4" placeholder="Tell us a bit about your data quality challenges..."></textarea>
+        </div>
+
+        <button type="submit"
+          class="w-full flex items-center justify-center gap-2 text-white font-semibold py-3 rounded-xl transition-transform hover:scale-[1.01] active:scale-[0.99]"
+          style="background:var(--primary);">
+          <i class="fa-solid fa-paper-plane"></i>
+          Send Message
+        </button>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-[var(--cream)] border-t border-slate-200 text-[var(--gray-soft)] py-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-10">
+
+                <!-- Column 1: Logo, Name & Map -->
+                <div>
+                    <div class="flex items-center gap-3 text-[var(--dark)] mb-4">
+                        <img 
+                            src="images/Logo.png" 
+                            alt="DeltaMax Logo" 
+                            class="w-10 h-10 rounded-2xl shadow-md object-cover"
+                        >
+                        <span class="text-3xl font-semibold">DeltaMax</span>
+                    </div>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div class="text-xl">
+                    <div class="font-semibold text-[var(--dark)] mb-4 text-2xl">Quick Links</div>
+                    <a href="index.html" class="block hover:text-[var(--primary)] mb-2.5">Home</a>
+                    <a href="about.html" class="block hover:text-[var(--primary)] mb-2.5">About</a>
+                    <a href="competitive_intel.html" class="block hover:text-[var(--primary)] mb-5">Competitive Intel</a>
+
+                    <div class="flex items-center gap-4">
+                        <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-9 h-9">
+                                <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+                                <rect x="12" y="1" width="10" height="10" fill="#7FBA00"/>
+                                <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
+                                <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
+                            </svg>
+                        </a>
+                        <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-9 h-9">
+                                <text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text>
+                                <path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/>
+                                <path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/>
+                            </svg>
+                        </a>
+                        <a href="https://console.cloud.google.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Google Cloud Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-9 h-9">
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 3: Get in Touch -->
+                <div class="text-base">
+                    <div class="font-semibold text-[var(--dark)] mb-4 text-lg">Get in Touch</div>
+                    <a href="mailto:contact@katalyststreet.com" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+                        <i class="far fa-envelope text-[var(--primary)]"></i>
+                        contact@katalyststreet.com
+                    </a>
+                     <a href="https://www.linkedin.com/company/katalyst-street" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)]">
+                        <i class="fab fa-linkedin text-[var(--primary)]"></i>
+                        KatalystStreet
+                    </a>
+                    <a href="https://www.linkedin.com/company/neualto-technologies-pvt-ltd" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+                        <i class="fab fa-linkedin text-[var(--primary)]"></i>
+                        NeuAlto
+                    </a>
+                   
+                </div>
+            </div>
+
+            <!-- Copyright Bar -->
+            <div class="border-t border-slate-200 mt-8 pt-5 text-center text-lg">
+                © <span id="copyright-year"></span>
+                <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] underline-offset-2 hover:underline">NeuAlto</a>
+                and
+                <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] underline-offset-2 hover:underline">KatalystStreet</a>.
+                All rights reserved.
+            </div>
+        </div>
+</footer>
+
+<script>
+  document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+  async function submitContactForm(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const statusEl = document.getElementById('form-status');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+
+    statusEl.innerHTML = '';
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+    const fullName = form.querySelector('[name="Full Name"]').value.trim();
+    const workEmail = form.querySelector('[name="Work Email"]').value.trim();
+    const phoneNumber = form.querySelector('[name="Phone Number"]').value.trim();
+    const companyName = form.querySelector('[name="Company Name"]').value.trim();
+    const service = form.querySelector('[name="Service"]').value;
+    const message = form.querySelector('[name="Message"]').value.trim();
+
+    const payload = {
+      fullName,
+      workEmail,
+      phoneNumber,
+      companyName,
+      service,
+      message
+    };
+
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error('SendGrid request failed');
+      }
+
+      statusEl.innerHTML = '<span class="text-green-600 font-medium">Thanks! Your message has been sent successfully.</span>';
+      form.reset();
+    } catch (error) {
+      statusEl.innerHTML = '<span class="text-red-600 font-medium">Sorry, your message could not be sent right now. Please try again later.</span>';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
+  }
+
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', submitContactForm);
+  }
+
+  function toggleDropdown(btn) {
+      const dropdown = btn.parentElement;
+      document.querySelectorAll('.dropdown').forEach(d => {
+          if (d !== dropdown) d.classList.remove('active');
+      });
+      dropdown.classList.toggle('active');
+  }
+
+  document.addEventListener('click', (e) => {
+      if (!e.target.closest('.dropdown')) {
+          document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+      }
+  });
+</script>
+
+</body>
+</html>

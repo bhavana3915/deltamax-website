@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitive Intel - DeltaMax</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        
+        /* NAVBAR */
+        .navbar {
+            background: rgba(248, 250, 252, 0.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+        }
+        .nav-link {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-link:hover {
+            color: #1e40af;
+            transform: translateY(-1px);
+        }
+        .dropdown {
+            position: relative;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            z-index: 50;
+            min-width: 240px;
+        }
+        .dropdown:hover .dropdown-content,
+        .dropdown.active .dropdown-content {
+            display: flex;
+            gap: 16px;
+        }
+        .cloud-icon:hover { transform: scale(1.15); }
+
+        /* Section Headings */
+        .section-heading { color: #1e40af; font-weight: 700; }
+
+        /* Expanding Cards */
+        .service-container {
+            display: flex; gap: 16px; padding: 2rem 1rem; justify-content: center; overflow-x: hidden;
+        }
+        .service-card {
+            position: relative; border-radius: 20px; overflow: hidden; cursor: pointer;
+            transition: all 450ms cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 0 0 160px; height: 420px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        .service-card:hover { flex: 0 0 560px; z-index: 20; }
+        .card-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: filter 450ms ease; }
+        .service-card:hover .card-bg { filter: brightness(0.4) saturate(0.7); }
+        .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.25)); }
+        .vertical-text {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-90deg);
+            font-size: 1.1rem; font-weight: 700; letter-spacing: 3px; color: white;
+        }
+        .service-card:hover .vertical-text { opacity: 0; }
+        .card-content {
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem;
+            color: white; opacity: 0; transition: all 450ms ease;
+        }
+        .service-card:hover .card-content { opacity: 1; }
+
+        /* Bar Table */
+        .bar-track { width: 84px; height: 8px; background: #eef0f2; border-radius: 9999px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 9999px; transition: width 0.4s ease; }
+        .score-cell { position: relative; }
+        .score-tooltip {
+            position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+            width: 240px; background: #0f172a; color: #fff; padding: 12px 14px;
+            border-radius: 10px; font-size: 13px; opacity: 0; transition: all 0.2s ease; z-index: 30;
+        }
+        .score-cell:hover .score-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body class="bg-zinc-50">
+
+    <!-- NAVBAR -->
+    <nav class="navbar fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center gap-x-3 shrink-0 hover:opacity-90 transition">
+                    <img 
+                        src="images/Logo.png" 
+                        alt="DeltaMax Logo" 
+                        class="w-9 h-9 rounded-2xl shadow-md object-cover"
+                    >
+                    <span class="text-2xl font-semibold tracking-tighter text-gray-900">DeltaMax</span>
+                </a>
+
+                <!-- Center Navigation Links -->
+                <div class="hidden md:flex items-center gap-x-8 text-sm font-medium text-gray-600 absolute left-1/2 -translate-x-1/2">
+                    <a href="index.html" class="nav-link hover:text-blue-700">Home</a>
+                    <a href="about.html" class="nav-link hover:text-blue-700">About</a>
+                    <a href="competitive_intel.html" class="nav-link hover:text-blue-700">Competitive Intel</a>
+                    
+                    <!-- Marketplace Dropdown -->
+                    <div class="dropdown group">
+                        <button onclick="toggleDropdown(this)" 
+                                class="nav-link hover:text-blue-700 flex items-center gap-1">
+                            Buy Product
+                            <i class="fas fa-chevron-down text-xs transition-transform"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-9 h-9">
+                                    <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+                                    <rect x="12" y="1" width="10" height="10" fill="#7FBA00"/>
+                                    <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
+                                    <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
+                                </svg>
+                            </a>
+                            <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-9 h-9">
+                                    <text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text>
+                                    <path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/>
+                                    <path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/>
+                                </svg>
+                            </a>
+                            <a href="https://console.cloud.google.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Google Cloud Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-9 h-9">
+                                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Demo (moved beside Marketplace) -->
+                    <button onclick="window.location.href='schedule.html'"
+                            class="flex items-center gap-x-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>Schedule Demo</span>
+                    </button>
+                </div>
+
+                <!-- Partner Logos (right side) -->
+                <div class="flex items-center gap-x-5 ml-auto shrink-0">
+                    <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+                        <img 
+                            src="images/katalyst_logo.png" 
+                            alt="Katalyst Street" 
+                            class="h-9 w-auto object-contain rounded-lg"
+                        >
+                    </a>
+                    <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+                        <img 
+                            src="images/neualto_logo.png" 
+                            alt="NeuAlto - Reach New Heights" 
+                            class="h-9 w-auto object-contain"
+                        >
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PLATFORM CAPABILITIES -->
+    <div class="bg-white py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="section-heading text-4xl font-bold text-center mb-12">Platform Capabilities</h2>
+            <div class="service-container flex gap-4 overflow-x-hidden pb-8 snap-x snap-mandatory" id="services"></div>
+        </div>
+    </div>
+
+    <!-- WHY DELTAMAX WINS -->
+    <div class="bg-gray-900 py-20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <img src="images/competitive.png" alt="DeltaMax Platform" class="rounded-3xl shadow-2xl w-full">
+                </div>
+                <div class="text-white">
+                    <h2 class="section-heading text-4xl font-bold mb-6">Why DeltaMax Wins</h2>
+                    <p class="text-lg text-zinc-300 mb-8">DeltaMax leads the market with a commanding total score of <span class="text-blue-400 font-bold">42/50</span>.</p>
+                    <ul class="space-y-4 text-zinc-300">
+                        <li class="flex items-start gap-3"><span class="text-blue-400 mt-1">✓</span> Best-in-class Anomaly Detection &amp; Drift Monitoring</li>
+                        <li class="flex items-start gap-3"><span class="text-blue-400 mt-1">✓</span> Full Data Lineage &amp; Root Cause Analysis</li>
+                        <li class="flex items-start gap-3"><span class="text-blue-400 mt-1">✓</span> Highest Privacy &amp; Security Compliance</li>
+                        <li class="flex items-start gap-3"><span class="text-blue-400 mt-1">✓</span> Superior Synthetic Data Generation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMPETITIVE INTELLIGENCE TABLE -->
+    <div class="max-w-7xl mx-auto px-6 py-16">
+        <h2 class="section-heading text-4xl font-bold text-center mb-8">Competitive Intelligence</h2>
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-zinc-900 text-white">
+                    <tr>
+                        <th class="py-6 px-8 text-left">Dimension</th>
+                        <th class="py-6 px-4 text-center">DeltaMax</th>
+                        <th class="py-6 px-4 text-center">Monte Carlo</th>
+                        <th class="py-6 px-4 text-center">Databricks<br> (Agument)</th>
+                        <th class="py-6 px-4 text-center">Snowflake <br> (Agument)</th>
+                        <th class="py-6 px-4 text-center">Informatica</th>
+                        <th class="py-6 px-4 text-center bg-emerald-700">Total</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100" id="ci-body"></tbody>
+                <tfoot class="bg-zinc-900 text-white font-bold">
+                    <tr>
+                        <td class="py-6 px-8">TOTAL</td>
+                        <td class="text-center text-emerald-400">42/50</td>
+                        <td class="text-center">32/50</td>
+                        <td class="text-center">29/50</td>
+                        <td class="text-center">26/50</td>
+                        <td class="text-center">27/50</td>
+                        <td class="text-center text-emerald-400">156/250</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- FOOTER - Exact from index.html with blue icons -->
+    <footer class="bg-[var(--cream)] border-t border-slate-200 text-[var(--gray-soft)] py-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-10">
+
+                <!-- Column 1 -->
+                <div>
+                    <div class="flex items-center gap-3 text-[var(--dark)] mb-4">
+                        <img 
+                            src="images/Logo.png" 
+                            alt="DeltaMax Logo" 
+                            class="w-8 h-8 rounded-2xl shadow-md object-cover"
+                        >
+                        <span class="text-2xl font-semibold">DeltaMax</span>
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="text-base">
+                    <div class="font-semibold text-[var(--dark)] mb-4 text-lg">Quick Links</div>
+                    <a href="index.html" class="block hover:text-blue-700 mb-2.5">Home</a>
+                    <a href="about.html" class="block hover:text-blue-700 mb-2.5">About</a>
+                    <a href="competitive_intel.html" class="block hover:text-blue-700 mb-5">Competitive Intel</a>
+
+                    <div class="flex items-center gap-4">
+                        <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-8 h-8 text-blue-600">
+                                <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+                                <rect x="12" y="1" width="10" height="10" fill="#7FBA00"/>
+                                <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
+                                <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
+                            </svg>
+                        </a>
+                        <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-8 h-8 text-blue-600">
+                                <text x="50" y="58" font-family="Arial" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text>
+                                <path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/>
+                            </svg>
+                        </a>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-8 h-8 text-blue-600">
+                                <!-- Google SVG -->
+                            </svg>
+                    </div>
+                </div>
+
+                <!-- Column 3 -->
+                <div class="text-base">
+                    <div class="font-semibold text-[var(--dark)] mb-4 text-lg">Get in Touch</div>
+                    <a href="mailto:contact@katalyststreet.com" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+                        <i class="far fa-envelope text-[var(--primary)]"></i>
+                        contact@katalyststreet.com
+                    </a>
+                     <a href="https://www.linkedin.com/company/katalyst-street" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)]">
+                        <i class="fab fa-linkedin text-[var(--primary)]"></i>
+                        KatalystStreet
+                    </a>
+                    <a href="https://www.linkedin.com/company/neualto-technologies-pvt-ltd" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+                        <i class="fab fa-linkedin text-[var(--primary)]"></i>
+                        NeuAlto
+                    </a>
+                   
+                </div>
+            </div>
+
+            <div class="border-t border-slate-200 mt-8 pt-5 text-center text-sm">
+                © <span id="copyright-year"></span> 
+                <a href="https://www.neualto.com/" target="_blank" class="hover:text-blue-700">NeuAlto</a> and 
+                <a href="https://www.katalyststreet.com/" target="_blank" class="hover:text-blue-700">KatalystStreet</a>.
+                All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDropdown(btn) {
+            const parent = btn.parentElement;
+            parent.classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            }
+        });
+
+        // Expanding Cards with Enhanced Descriptions
+        const cards = [
+            {
+                title: "DeltaMax",
+                img: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=800&fit=crop",
+                desc: "DeltaMax unifies anomaly detection, drift monitoring, and freshness checks into a single AI-driven Trust Score — so teams get one clear signal instead of piecing together separate tools. Native support for synthetic test data, in-environment privacy, and transparent pricing means most teams are fully monitoring production pipelines within days, not months."
+            },
+            {
+                title: "Monte Carlo",
+                img: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&h=800&fit=crop",
+                desc: "Monte Carlo pioneered data observability and remains excellent at ML-driven anomaly detection and cross-system lineage, helping teams trace incidents back to their source quickly. It's built primarily for pipeline and metadata monitoring, with less emphasis on synthetic test data generation, and enterprise pricing is typically negotiated rather than published upfront."
+            },
+            {
+                title: "Databricks",
+                img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=800&fit=crop",
+                desc: "Databricks brings data quality directly into the lakehouse through Delta Live Table expectations and Unity Catalog lineage, which is a natural fit for teams already running Spark workloads there. Quality checks are tightly coupled to the Databricks environment itself, so validating data that lives outside the lakehouse typically needs extra tooling."
+            },
+            {
+                title: "Snowflake",
+                img: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=800&fit=crop",
+                desc: "Snowflake provides industry-leading data privacy, governance, and extremely easy cloud-native setup. It has strong migration validation but limited native anomaly detection, drift monitoring, and synthetic data capabilities."
+            },
+            {
+                title: "Informatica",
+                img: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=600&h=800&fit=crop",
+                desc: "Informatica's decades of enterprise data governance and MDM experience make it a trusted choice for large, highly regulated organizations with complex legacy systems. That same breadth brings a steeper learning curve and higher setup investment, and teams often need additional configuration to get real-time anomaly alerts running."
+            }
+        ];
+
+        function createCards() {
+            const container = document.getElementById('services');
+            container.innerHTML = cards.map(card => `
+                <div class="service-card flex-shrink-0 snap-center">
+                    <div class="card-bg" style="background-image: url('${card.img}')"></div>
+                    <div class="card-overlay"></div>
+                    <div class="vertical-text text-white">${card.title.toUpperCase()}</div>
+                    <div class="card-content">
+                        <h3 class="text-2xl font-semibold mb-3">${card.title}</h3>
+                        <p>${card.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Full Table Data
+        const competitors = [
+          { color: '#2563eb', text: 'text-blue-700' },
+          { color: '#dc2626', text: 'text-red-700' },
+          { color: '#d97706', text: 'text-amber-700' },
+          { color: '#059669', text: 'text-emerald-700' },
+          { color: '#4f46e5', text: 'text-indigo-700' }
+        ];
+
+        const rows = [
+          { name: "Anomaly detection", total: 18, scores: [
+            {s:4, title:"DeltaMax — Anomaly Detection", desc:"Advanced multi-method ML detection with excellent precision and low false positives."},
+            {s:5, title:"Monte Carlo — Anomaly Detection", desc:"Strong rule-based and statistical anomaly engine, best-in-class for real-time monitoring."},
+            {s:4, title:"Databricks — Anomaly Detection", desc:"Good integration with Spark ML but requires more custom configuration."},
+            {s:2, title:"Snowflake — Anomaly Detection", desc:"Limited native anomaly capabilities; relies heavily on external tools."},
+            {s:3, title:"Informatica — Anomaly Detection", desc:"Solid enterprise features but slower and more complex to deploy."}
+          ]},
+          { name: "Statistical drift / PSI", total: 16, scores: [
+            {s:5, title:"DeltaMax — Statistical Drift", desc:"Industry-leading PSI and KS drift detection with automated alerts."},
+            {s:3, title:"Monte Carlo — Statistical Drift", desc:"Good basic drift monitoring but lacks advanced depth."},
+            {s:3, title:"Databricks — Statistical Drift", desc:"Integrated drift tracking via MLflow."},
+            {s:2, title:"Snowflake — Statistical Drift", desc:"Basic support only; needs third-party tools."},
+            {s:3, title:"Informatica — Statistical Drift", desc:"Enterprise drift capabilities with good reporting."}
+          ]},
+          { name: "Dataset reconciliation", total: 14, scores: [
+            {s:5, title:"DeltaMax — Dataset Reconciliation", desc:"Best-in-class automated reconciliation with full row/column comparison."},
+            {s:2, title:"Monte Carlo — Dataset Reconciliation", desc:"Limited reconciliation features."},
+            {s:2, title:"Databricks — Dataset Reconciliation", desc:"Possible via custom notebooks but not native."},
+            {s:2, title:"Snowflake — Dataset Reconciliation", desc:"Basic comparison functions only."},
+            {s:3, title:"Informatica — Dataset Reconciliation", desc:"Strong data quality and reconciliation suite."}
+          ]},
+          { name: "Migration validation", total: 17, scores: [
+            {s:4, title:"DeltaMax — Migration Validation", desc:"Comprehensive pre/post migration validation with schema and data checks."},
+            {s:3, title:"Monte Carlo — Migration Validation", desc:"Decent validation tools for cloud migrations."},
+            {s:3, title:"Databricks — Migration Validation", desc:"Good for Spark-based migrations."},
+            {s:3, title:"Snowflake — Migration Validation", desc:"Strong native migration validation features."},
+            {s:4, title:"Informatica — Migration Validation", desc:"Enterprise migration suite with excellent validation."}
+          ]},
+          { name: "BigQuery native", total: 14, scores: [
+            {s:5, title:"DeltaMax — BigQuery Native", desc:"Deep native integration and optimization for Google BigQuery."},
+            {s:3, title:"Monte Carlo — BigQuery Native", desc:"Basic BigQuery support."},
+            {s:2, title:"Databricks — BigQuery Native", desc:"Limited native support; needs connectors."},
+            {s:1, title:"Snowflake — BigQuery Native", desc:"No native BigQuery integration."},
+            {s:3, title:"Informatica — BigQuery Native", desc:"Good connector support but not deeply native."}
+          ]},
+          { name: "Ease of setup", total: 15, scores: [
+            {s:3, title:"DeltaMax — Ease of Setup", desc:"Straightforward setup with good documentation."},
+            {s:4, title:"Monte Carlo — Ease of Setup", desc:"Very easy to deploy and configure."},
+            {s:3, title:"Databricks — Ease of Setup", desc:"Requires Databricks workspace knowledge."},
+            {s:4, title:"Snowflake — Ease of Setup", desc:"Extremely easy cloud-native setup."},
+            {s:1, title:"Informatica — Ease of Setup", desc:"Complex enterprise deployment."}
+          ]},
+          { name: "Data privacy / in-env", total: 21, scores: [
+            {s:5, title:"DeltaMax — Data Privacy", desc:"Runs fully in your environment with zero data leaving your VPC."},
+            {s:4, title:"Monte Carlo — Data Privacy", desc:"Strong privacy features with good compliance."},
+            {s:4, title:"Databricks — Data Privacy", desc:"Excellent security and compliance options."},
+            {s:5, title:"Snowflake — Data Privacy", desc:"Industry-leading data privacy and governance."},
+            {s:3, title:"Informatica — Data Privacy", desc:"Strong but requires careful configuration."}
+          ]},
+          { name: "Synthetic test data", total: 9, scores: [
+            {s:5, title:"DeltaMax — Synthetic Test Data", desc:"Best-in-class privacy-preserving synthetic data generation."},
+            {s:1, title:"Monte Carlo — Synthetic Test Data", desc:"Very limited synthetic data capabilities."},
+            {s:1, title:"Databricks — Synthetic Test Data", desc:"Basic generation via libraries only."},
+            {s:1, title:"Snowflake — Synthetic Test Data", desc:"No native synthetic data tools."},
+            {s:1, title:"Informatica — Synthetic Test Data", desc:"Limited synthetic data support."}
+          ]},
+          { name: "Pricing accessibility", total: 12, scores: [
+            {s:4, title:"DeltaMax — Pricing Accessibility", desc:"Competitive and transparent pricing model."},
+            {s:2, title:"Monte Carlo — Pricing Accessibility", desc:"Higher pricing tier for full features."},
+            {s:2, title:"Databricks — Pricing Accessibility", desc:"Usage-based pricing can become expensive."},
+            {s:3, title:"Snowflake — Pricing Accessibility", desc:"Consumption-based but can be costly at scale."},
+            {s:1, title:"Informatica — Pricing Accessibility", desc:"Enterprise licensing — expensive for most teams."}
+          ]},
+          { name: "Data lineage", total: 20, scores: [
+            {s:2, title:"DeltaMax — Data Lineage", desc:"Basic lineage tracking; focus is on quality monitoring."},
+            {s:5, title:"Monte Carlo — Data Lineage", desc:"Excellent end-to-end data lineage visualization."},
+            {s:5, title:"Databricks — Data Lineage", desc:"Powerful Unity Catalog lineage features."},
+            {s:3, title:"Snowflake — Data Lineage", desc:"Good native lineage in Snowflake."},
+            {s:5, title:"Informatica — Data Lineage", desc:"Best-in-class enterprise data lineage."}
+          ]}
+        ];
+
+        function renderRows() {
+          const body = document.getElementById('ci-body');
+          body.innerHTML = rows.map((row, rIdx) => {
+            const isLastTwo = rIdx >= rows.length - 2;
+            const cells = row.scores.map((cell, i) => {
+              const c = competitors[i];
+              const pct = (cell.s / 5) * 100;
+              return `
+                <td class="py-5 px-4 score-cell ${isLastTwo ? 'tooltip-above' : ''}">
+                  <div class="flex items-center justify-center gap-2">
+                    <div class="bar-track">
+                      <div class="bar-fill" style="width:${pct}%; background:${c.color}"></div>
+                    </div>
+                    <span class="font-semibold ${c.text} w-3 text-xs">${cell.s}</span>
+                  </div>
+                  <div class="score-tooltip">
+                    <div class="tooltip-title">${cell.title}</div>
+                    <div class="tooltip-desc">${cell.desc}</div>
+                  </div>
+                </td>`;
+            }).join('');
+            return `
+              <tr>
+                <td class="py-5 px-8 font-medium">${row.name}</td>
+                ${cells}
+                <td class="text-center font-bold text-emerald-600">${row.total}</td>
+              </tr>`;
+          }).join('');
+        }
+
+        window.onload = () => {
+            createCards();
+            renderRows();
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+        };
+    </script>
+</body>
+</html>

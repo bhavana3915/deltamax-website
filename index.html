@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeltaMax - Intelligent Data Quality Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+       
+        :root {
+            --primary: #0369A1;
+            --primary-light: #0EA5E9;
+            --primary-deep: #1E3A8A;
+            --dark: #0F172A;
+            --dark-2: #1E2937;
+            --cream: #F8FAFC;
+            --gray-soft: #64748B;
+        }
+       
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        .grad-text { color: var(--primary); }
+        .grad-bg, .grad-bg-diag { background: var(--primary); }
+
+        /* NAVBAR */
+        .navbar {
+            background: rgba(248, 250, 252, 0.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+        }
+        .nav-link {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-link:hover {
+            color: #1e40af;
+            transform: translateY(-1px);
+        }
+        .dropdown {
+            position: relative;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            z-index: 50;
+            min-width: 240px;
+        }
+        .dropdown:hover .dropdown-content,
+        .dropdown.active .dropdown-content {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+        }
+        .cloud-icon {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .cloud-icon:hover {
+            transform: scale(1.15);
+        }
+
+        /* Hero */
+        .hero-bg {
+            position: relative;
+            overflow: hidden;
+            background: var(--dark);
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+            min-height: calc(100svh - 4rem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .hero-video-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: contain;
+            object-position: center;
+            z-index: 0;
+            filter: blur(0.8px) brightness(0.7);
+            background: #000;
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: linear-gradient(90deg, rgba(2, 6, 23, 0.42) 0%, rgba(2, 6, 23, 0.2) 50%, rgba(2, 6, 23, 0.42) 100%);
+        }
+        .hero-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.3);
+            max-width: min(100%, 36rem);
+        }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; opacity: 0.15; z-index: 2; }
+        .blob-primary { background: var(--primary); }
+
+        /* Donut Chart (legacy classes, retained for compatibility) */
+        .donut-segment.is-dim { opacity: 0.35; }
+        .donut-segment.is-active { stroke-width: 42; filter: drop-shadow(0 2px 6px rgba(15,23,42,0.25)); }
+        .legend-item.is-active { background: #F0F9FF; }
+
+        /* ===== Why DeltaMax Donut Infographic ===== */
+        .slice {
+            transform-box: fill-box;
+            transform-origin: center;
+            transition: transform 0.25s ease, filter 0.25s ease, opacity 0.25s ease, -webkit-filter 0.25s ease;
+            cursor: pointer;
+        }
+        .slice.active,
+        .slice:hover {
+            transform: scale(1.035);
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+        }
+        .slice.dim {
+            filter: blur(3px);
+        }
+
+        .connector-line { transition: stroke-width 0.2s ease; }
+        .connector-dot { transition: r 0.2s ease; }
+        .connector.active .connector-line { stroke-width: 3; }
+        .connector.active .connector-dot { r: 7; }
+
+        .label-box {
+            cursor: pointer;
+        }
+        .label-box h4 { transition: color 0.2s ease; }
+        .label-headline,
+        .label-percent,
+        .label-desc {
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            line-height: 1.45;
+        }
+        .label-headline { font-weight: 700; }
+        .label-percent { font-weight: 700; }
+        .label-desc { font-weight: 400; color: var(--gray-soft); }
+
+        /* Flip Cards */
+        .card { perspective: 1000px; height: 260px; }
+
+        .donut-mobile-legend {
+            display: none;
+        }
+        .card-inner {
+            position: relative; width: 100%; height: 100%;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .card.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 20px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        .card-front { background: white; border: 1px solid #e2e8f0; }
+        .card-back { background: var(--primary); color: white; transform: rotateY(180deg); }
+
+        /* Stacked Cards */
+        .stack-wrap { position: relative; height: 460px; cursor: pointer; width: min(100%, 360px); margin: 0 auto; }
+        .stack-card {
+            position: absolute; top: 50%; left: 50%; width: min(86vw, 320px); height: min(70vw, 280px);
+            margin-top: -140px; margin-left: -160px;
+            border-radius: 24px; overflow: hidden; background: #fff;
+            box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.5);
+            transition: all 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        .stack-card[data-role="active"] { transform: translateY(0) scale(1); z-index: 3; opacity: 1; }
+        .stack-card[data-role="prev"] { transform: translateY(-85px) scale(0.88); opacity: 0.65; filter: blur(2px); z-index: 1; }
+        .stack-card[data-role="next"] { transform: translateY(85px) scale(0.88); opacity: 0.65; filter: blur(2px); z-index: 2; }
+
+        /* Timeline */
+        .timeline-track {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+        @media (max-width: 767px) {
+            .hero-bg {
+                min-height: calc(100svh - 4rem);
+                padding: 1.25rem 0.75rem;
+            }
+            .hero-card {
+                padding: 1.5rem 1.25rem;
+            }
+            .hero-card h1 {
+                font-size: 2.15rem;
+            }
+            .donut-mobile-legend {
+                display: grid;
+                gap: 0.75rem;
+            }
+            .donut-mobile-legend .legend-card {
+                border: 1px solid #e2e8f0;
+                border-radius: 1rem;
+                padding: 0.85rem 1rem;
+                background: white;
+                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+            }
+            .donut-mobile-legend .legend-card .legend-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-weight: 700;
+                color: var(--dark);
+                margin-bottom: 0.3rem;
+            }
+            .donut-mobile-legend .legend-card .legend-title span:last-child {
+                font-size: 0.95rem;
+            }
+            .donut-mobile-legend .legend-card p {
+                margin: 0;
+                font-size: 0.9rem;
+                color: var(--gray-soft);
+                line-height: 1.5;
+            }
+            .stack-wrap {
+                height: 360px;
+                width: 100%;
+            }
+            .stack-card {
+                width: min(84vw, 260px);
+                height: min(62vw, 220px);
+                margin-top: -110px;
+                margin-left: -130px;
+            }
+            .timeline-track {
+                flex-direction: column;
+                gap: 0.9rem;
+                align-items: stretch;
+            }
+            .timeline-line,
+            .timeline-progress {
+                display: none;
+            }
+            .timeline-step {
+                width: 100%;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            .timeline-label {
+                margin-top: 0;
+                text-align: left;
+                font-size: 0.95rem;
+            }
+            .timeline-content-box {
+                padding: 1.25rem;
+                margin-top: 1.5rem;
+            }
+        }
+        @media (min-width: 768px) {
+            .donut-mobile-legend {
+                display: none;
+            }
+        }
+        .timeline-line {
+            position: absolute;
+            top: 24px;
+            left: calc(10% + 24px);
+            right: calc(10% + 24px);
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+        .timeline-progress {
+            position: absolute;
+            top: 24px;
+            left: calc(10% + 24px);
+            height: 2px;
+            background: var(--primary);
+            z-index: 1;
+            transition: width 1s ease;
+            width: 0%;
+        }
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 20%;
+            cursor: pointer;
+        }
+        .timeline-dot {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.125rem;
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            color: var(--gray-soft);
+            transition: all 0.4s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .timeline-dot.is-active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 6px rgba(3, 105, 161, 0.15);
+            transform: scale(1.15);
+        }
+        .timeline-label {
+            margin-top: 12px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            text-align: center;
+            color: var(--gray-soft);
+            transition: color 0.3s;
+        }
+        .timeline-label.is-active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .timeline-content-box {
+            margin-top: 3rem;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            background: linear-gradient(135deg, #fff 60%, #f1f5f9);
+            box-shadow: 0 4px 24px rgba(3,105,161,0.07);
+            border: 1px solid #e2e8f0;
+            transition: opacity 0.4s ease;
+        }
+    </style>
+</head>
+<body class="bg-[var(--cream)] text-[var(--dark)]">
+
+    <!-- NAVBAR -->
+    <nav class="navbar fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center gap-x-3 shrink-0 hover:opacity-90 transition">
+                    <img 
+                        src="images/Logo.png" 
+                        alt="DeltaMax Logo" 
+                        class="w-9 h-9 rounded-2xl shadow-md object-cover"
+                    >
+                    <span class="text-2xl font-semibold tracking-tighter text-gray-900">DeltaMax</span>
+                </a>
+
+                <!-- Center Navigation Links -->
+                <div class="hidden md:flex items-center gap-x-8 text-sm font-medium text-gray-600 absolute left-1/2 -translate-x-1/2">
+                    <a href="index.html" class="nav-link hover:text-blue-700">Home</a>
+                    <a href="about.html" class="nav-link hover:text-blue-700">About</a>
+                    <a href="competitive_intel.html" class="nav-link hover:text-blue-700">Competitive Intel</a>
+                    
+                    <!-- Marketplace Dropdown -->
+                    <div class="dropdown group">
+                        <button onclick="toggleDropdown(this)" 
+                                class="nav-link hover:text-blue-700 flex items-center gap-1">
+                            Buy Product
+                            <i class="fas fa-chevron-down text-xs transition-transform"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-9 h-9">
+                                    <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+                                    <rect x="12" y="1" width="10" height="10" fill="#7FBA00"/>
+                                    <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
+                                    <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
+                                </svg>
+                            </a>
+                            <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-9 h-9">
+                                    <text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text>
+                                    <path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/>
+                                    <path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/>
+                                </svg>
+                            </a>
+                            <a href="https://console.cloud.google.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Google Cloud Marketplace">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-9 h-9">
+                                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Demo (moved beside Marketplace) -->
+                    <button onclick="window.location.href='schedule.html'"
+                            class="flex items-center gap-x-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>Schedule Demo</span>
+                    </button>
+                </div>
+
+                <!-- Partner Logos (right side) -->
+                <div class="flex items-center gap-x-5 ml-auto shrink-0">
+                    <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+                        <img 
+                            src="images/katalyst_logo.png" 
+                            alt="Katalyst Street" 
+                            class="h-9 w-auto object-contain rounded-lg"
+                        >
+                    </a>
+                    <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+                        <img 
+                            src="images/neualto_logo.png" 
+                            alt="NeuAlto - Reach New Heights" 
+                            class="h-9 w-auto object-contain"
+                        >
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero-bg flex items-center" style="height: calc(100vh - 4rem); margin-top: 4rem;">
+        <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
+            <source src="images/Copy of DeltaMax.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="blob blob-primary -top-24 -left-24 w-96 h-96"></div>
+        <div class="blob blob-primary top-10 -right-24 w-[28rem] h-[28rem]"></div>
+        <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+            <div class="hero-card max-w-xl mx-auto rounded-[1.75rem] px-8 py-8 md:px-10 md:py-10">
+                <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4 tracking-tight">
+                    Intelligent <span class="grad-text">Data Quality</span> Platform
+                </h1>
+                <p class="text-lg text-[var(--gray-soft)] mb-6">Never Fly Blind Again.</p>
+                <button onclick="window.location.href='data-quality.html'"
+                        class="grad-bg-diag text-white px-8 py-3 rounded-3xl font-semibold text-base shadow-lg hover:shadow-xl transition-all">
+                    Explore Solutions
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHY DELTAMAX -->
+    <section id="why-us" class="py-16 px-6 bg-gradient-to-b from-white to-sky-50/40">
+        <div class="max-w-6xl mx-auto">
+
+            <!-- Section Header -->
+            <div class="text-center max-w-2xl mx-auto mb-2">
+                <span class="inline-block text-xs font-semibold tracking-widest text-sky-600 uppercase mb-3">
+                    The DeltaMax Advantage
+                </span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
+                    Why Choose <span class="text-sky-500">DeltaMax?</span>
+                </h2>
+                <p class="text-slate-500 text-base leading-relaxed">
+                    A single, unified health score built from four pillars of data quality —
+                    monitored continuously, scored transparently.
+                </p>
+            </div>
+
+            <!-- Infographic Canvas -->
+            <div class="w-full max-w-5xl mx-auto -mt-2">
+                <svg id="donutInfographic" viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+
+                    <!-- ===== DONUT SLICES ===== -->
+                    <!-- Freshness Health 23% : #10B981 (angle 277.2deg -> 360deg) -->
+                    <path class="slice" data-key="freshness" fill="#10B981"
+                        d="M 311.1,282.5 A 140 140 0 0 1 450,160 L 450,215 A 85 85 0 0 0 365.68,289.35 Z"></path>
+
+                    <!-- Drift Health 28% : #0EA5E9 (angle 0deg -> 100.8deg) -->
+                    <path class="slice" data-key="drift" fill="#0EA5E9"
+                        d="M 450,160 A 140 140 0 0 1 587.5,326.24 L 533.5,315.93 A 85 85 0 0 0 450,215 Z"></path>
+
+                    <!-- Business Rules Health 25% : #8B5CF6 (angle 100.8deg -> 190.8deg) -->
+                    <path class="slice" data-key="business" fill="#8B5CF6"
+                        d="M 587.5,326.24 A 140 140 0 0 1 423.76,437.5 L 434.07,383.5 A 85 85 0 0 0 533.5,315.93 Z"></path>
+
+                    <!-- Anomaly Detection Health 24% : #F59E0B (angle 190.8deg -> 277.2deg) -->
+                    <path class="slice" data-key="anomaly" fill="#F59E0B"
+                        d="M 423.76,437.5 A 140 140 0 0 1 311.1,282.5 L 365.68,289.35 A 85 85 0 0 0 434.07,383.5 Z"></path>
+
+                    <!-- ===== CENTER CIRCLE ===== -->
+                    <circle cx="450" cy="300" r="85" fill="#FFFFFF" stroke="#F1F5F9" stroke-width="2"></circle>
+                    <foreignObject x="390" y="250" width="120" height="100">
+                        <div xmlns="http://www.w3.org/1999/xhtml" class="w-full h-full flex flex-col items-center justify-center">
+                           
+                            <span class="text-xs font-bold text-slate-900 leading-tight text-center">TRUST<br/>SCORE</span>
+                        </div>
+                    </foreignObject>
+
+                    <!-- ===== CONNECTOR LINES ===== -->
+                    <!-- Freshness: top-left -->
+                    <g class="connector" data-key="freshness">
+                        <path class="connector-line" d="M 357.5,195 L 327.7,161.25 L 270,161.25" fill="none" stroke="#10B981" stroke-width="2"></path>
+                        <circle class="connector-dot" cx="357.5" cy="195" r="5" fill="#10B981"></circle>
+                        <circle class="connector-dot" cx="270" cy="161.25" r="5" fill="#10B981"></circle>
+                    </g>
+
+                    <!-- Drift: top-right -->
+                    <g class="connector" data-key="drift">
+                        <path class="connector-line" d="M 557.87,210.76 L 592.5,182.1 L 630,182.1" fill="none" stroke="#0EA5E9" stroke-width="2"></path>
+                        <circle class="connector-dot" cx="557.87" cy="210.76" r="5" fill="#0EA5E9"></circle>
+                        <circle class="connector-dot" cx="630" cy="182.1" r="5" fill="#0EA5E9"></circle>
+                    </g>
+
+                    <!-- Business: bottom-right -->
+                    <g class="connector" data-key="business">
+                        <path class="connector-line" d="M 528.68,415.8 L 553.97,453 L 630,453" fill="none" stroke="#8B5CF6" stroke-width="2"></path>
+                        <circle class="connector-dot" cx="528.68" cy="415.8" r="5" fill="#8B5CF6"></circle>
+                        <circle class="connector-dot" cx="630" cy="453" r="5" fill="#8B5CF6"></circle>
+                    </g>
+
+                    <!-- Anomaly: bottom-left -->
+                    <g class="connector" data-key="anomaly">
+                        <path class="connector-line" d="M 336.7,382.3 L 300.3,408.8 L 270,408.8" fill="none" stroke="#F59E0B" stroke-width="2"></path>
+                        <circle class="connector-dot" cx="336.7" cy="382.3" r="5" fill="#F59E0B"></circle>
+                        <circle class="connector-dot" cx="270" cy="408.8" r="5" fill="#F59E0B"></circle>
+                    </g>
+
+                    <!-- ===== LABEL BOXES ===== -->
+                    <!-- Freshness: top-left, right-aligned -->
+                    <foreignObject class="label-box" data-key="freshness" x="10" y="108" width="255" height="105">
+                        <div xmlns="http://www.w3.org/1999/xhtml" class="h-full flex flex-col items-end text-right justify-center pr-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="label-headline text-slate-900">Freshness Monitoring Health</h4>
+                                <span class="label-percent shrink-0" style="color:#10B981">23%</span>
+                            </div>
+                            <p class="label-desc">
+                                Monitors data latency and update cadence, alerting teams the moment
+                                critical datasets fall behind schedule.
+                            </p>
+                        </div>
+                    </foreignObject>
+
+                    <!-- Drift: top-right, left-aligned -->
+                    <foreignObject class="label-box" data-key="drift" x="635" y="128" width="255" height="105">
+                        <div xmlns="http://www.w3.org/1999/xhtml" class="h-full flex flex-col items-start text-left justify-center pl-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="label-percent shrink-0" style="color:#0EA5E9">28%</span>
+                                <h4 class="label-headline text-slate-900">Drift Monitoring Health</h4>
+                            </div>
+                            <p class="label-desc">
+                                Tracks schema and statistical drift across pipelines, flagging
+                                deviations before they impact downstream models.
+                            </p>
+                        </div>
+                    </foreignObject>
+
+                    <!-- Business: bottom-right, left-aligned -->
+                    <foreignObject class="label-box" data-key="business" x="635" y="398" width="255" height="105">
+                        <div xmlns="http://www.w3.org/1999/xhtml" class="h-full flex flex-col items-start text-left justify-center pl-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="label-percent shrink-0" style="color:#8B5CF6">25%</span>
+                                <h4 class="label-headline text-slate-900">Business Rules Health</h4>
+                            </div>
+                            <p class="label-desc">
+                                Validates data against custom business logic and compliance
+                                rules to keep accuracy aligned with operations.
+                            </p>
+                        </div>
+                    </foreignObject>
+
+                    <!-- Anomaly: bottom-left, right-aligned -->
+                    <foreignObject class="label-box" data-key="anomaly" x="10" y="378" width="255" height="105">
+                        <div xmlns="http://www.w3.org/1999/xhtml" class="h-full flex flex-col items-end text-right justify-center pr-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="label-headline text-slate-900">Anomaly Detection Health</h4>
+                                <span class="label-percent shrink-0" style="color:#F59E0B">24%</span>
+                            </div>
+                            <p class="label-desc">
+                                Uses AI-driven detection to surface outliers and irregular
+                                patterns in real time, reducing silent data failures.
+                            </p>
+                        </div>
+                    </foreignObject>
+
+                </svg>
+                <div class="donut-mobile-legend">
+                    <div class="legend-card">
+                        <div class="legend-title"><span>Freshness Monitoring</span><span style="color:#10B981">23%</span></div>
+                        <p>Tracks update cadence and data latency so stale data is caught early.</p>
+                    </div>
+                    <div class="legend-card">
+                        <div class="legend-title"><span>Drift Monitoring</span><span style="color:#0EA5E9">28%</span></div>
+                        <p>Flags schema and statistical drift before it impacts analytics or models.</p>
+                    </div>
+                    <div class="legend-card">
+                        <div class="legend-title"><span>Business Rules Health</span><span style="color:#8B5CF6">25%</span></div>
+                        <p>Validates data against custom logic and compliance requirements.</p>
+                    </div>
+                    <div class="legend-card">
+                        <div class="legend-title"><span>Anomaly Detection Health</span><span style="color:#F59E0B">24%</span></div>
+                        <p>Identifies unusual patterns and outliers in real time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION (UPDATED) -->
+    <section id="features" class="relative overflow-hidden py-28" style="background: var(--dark);">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+                <div id="feature-content" class="relative min-h-[280px] md:min-h-[520px]"></div>
+                
+                <div class="relative flex flex-col items-center justify-center gap-4">
+                    <div class="stack-wrap" id="stack-wrap"></div>
+
+                    <div class="flex items-center justify-center gap-4">
+                        <button onclick="prevFeature()" 
+                                class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-2xl border border-sky-400/70 bg-sky-500/90 text-white text-xl md:text-2xl font-bold shadow-lg transition-all hover:-translate-y-1">
+                            ↑
+                        </button>
+                        <button onclick="nextFeature()" 
+                                class="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-2xl border border-sky-400/70 bg-sky-500/90 text-white text-xl md:text-2xl font-bold shadow-lg transition-all hover:translate-y-1">
+                            ↓
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TIMELINE (Original Full Version) -->
+    <section id="process" class="py-24 bg-white">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center mb-10 md:mb-16">
+                <span class="inline-block px-4 py-1 rounded-full text-sm font-medium mb-4 text-white grad-bg">HOW WE WORK</span>
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tight">Our Journey With You</h2>
+            </div>
+
+            <!-- Timeline track -->
+            <div class="timeline-track">
+                <div class="timeline-line"></div>
+                <div class="timeline-progress" id="timeline-progress"></div>
+
+                <div class="timeline-step" onclick="goToTimeline(0)">
+                    <div class="timeline-dot" id="dot-0">1</div>
+                    <div class="timeline-label" id="label-0">Discovery</div>
+                </div>
+                <div class="timeline-step" onclick="goToTimeline(1)">
+                    <div class="timeline-dot" id="dot-1">2</div>
+                    <div class="timeline-label" id="label-1">Strategy</div>
+                </div>
+                <div class="timeline-step" onclick="goToTimeline(2)">
+                    <div class="timeline-dot" id="dot-2">3</div>
+                    <div class="timeline-label" id="label-2">Implementation</div>
+                </div>
+                <div class="timeline-step" onclick="goToTimeline(3)">
+                    <div class="timeline-dot" id="dot-3">4</div>
+                    <div class="timeline-label" id="label-3">Optimization</div>
+                </div>
+                <div class="timeline-step" onclick="goToTimeline(4)">
+                    <div class="timeline-dot" id="dot-4">5</div>
+                    <div class="timeline-label" id="label-4">Scale</div>
+                </div>
+            </div>
+
+            <!-- Content box -->
+            <div class="timeline-content-box" id="timeline-content-box">
+                <h3 id="timeline-title" class="text-3xl font-semibold mb-4 text-[var(--dark)]"></h3>
+                <p id="timeline-desc" class="text-[var(--gray-soft)] leading-relaxed text-base"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-[var(--cream)] border-t border-slate-200 text-[var(--gray-soft)] py-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-3 gap-10">
+
+                <!-- Column 1: Logo, Name & Map -->
+                <div>
+                    <div class="flex items-center gap-3 text-[var(--dark)] mb-4">
+                        <img 
+                            src="images/Logo.png" 
+                            alt="DeltaMax Logo" 
+                            class="w-8 h-8 rounded-2xl shadow-md object-cover"
+                        >
+                        <span class="text-2xl font-semibold">DeltaMax</span>
+                    </div>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div class="text-base">
+                    <div class="font-semibold text-[var(--dark)] mb-4 text-lg">Quick Links</div>
+                    <a href="index.html" class="block hover:text-[var(--primary)] mb-2.5">Home</a>
+                    <a href="about.html" class="block hover:text-[var(--primary)] mb-2.5">About</a>
+                    <a href="competitive_intel.html" class="block hover:text-[var(--primary)] mb-5">Competitive Intel</a>
+
+                    <div class="flex items-center gap-4">
+                        <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-8 h-8">
+                                <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+                                <rect x="12" y="1" width="10" height="10" fill="#7FBA00"/>
+                                <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
+                                <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
+                            </svg>
+                        </a>
+                        <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-8 h-8">
+                                <text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text>
+                                <path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/>
+                                <path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/>
+                            </svg>
+                        </a>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-8 h-8">
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/>
+                            </svg>
+                    </div>
+                </div>
+
+                <!-- Column 3: Get in Touch -->
+                <div class="text-base">
+                    <div class="font-semibold text-[var(--dark)] mb-4 text-lg">Get in Touch</div>
+                    <a href="mailto:contact@katalyststreet.com" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+                        <i class="far fa-envelope text-[var(--primary)]"></i>
+                        contact@katalyststreet.com
+                    </a>
+                     <a href="https://www.linkedin.com/company/katalyst-street" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)]">
+                        <i class="fab fa-linkedin text-[var(--primary)]"></i>
+                        KatalystStreet
+                    </a>
+                    <a href="https://www.linkedin.com/company/neualto-technologies-pvt-ltd" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+                        <i class="fab fa-linkedin text-[var(--primary)]"></i>
+                        NeuAlto
+                    </a>
+                   
+                </div>
+            </div>
+
+            <!-- Copyright Bar -->
+            <div class="border-t border-slate-200 mt-8 pt-5 text-center text-sm">
+                © <span id="copyright-year"></span>
+                <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] underline-offset-2 hover:underline">NeuAlto</a>
+                and
+                <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] underline-offset-2 hover:underline">KatalystStreet</a>.
+                All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- IMAGE MODAL -->
+    <div id="image-modal" class="hidden fixed inset-0 z-[100] items-center justify-center bg-black/70 p-4" onclick="closeImageModal(event)">
+        <div class="bg-white rounded-3xl p-8 max-w-2xl w-full relative" onclick="event.stopPropagation()">
+            <button onclick="closeImageModal()" class="absolute -top-4 -right-4 bg-white text-4xl w-12 h-12 flex items-center justify-center rounded-full shadow-2xl">×</button>
+            <div class="relative h-80 rounded-2xl overflow-hidden mb-6">
+                <img id="modal-image" class="absolute inset-0 w-full h-full object-cover" src="" alt="">
+            </div>
+            <div id="modal-eyebrow" class="text-[var(--primary)] font-semibold tracking-wider"></div>
+            <div id="modal-title" class="text-3xl font-bold mt-2 mb-4"></div>
+            <p id="modal-description" class="text-[var(--gray-soft)] leading-relaxed"></p>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic copyright year
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+        /* Features with Rich Descriptions */
+        const features = [
+            { id: 0, title: "Anomaly Detection", desc: "Not all data issues are obvious. Many appear as small deviations such as slight drops in volume, unexpected spikes, or subtle shifts in patterns that often go unnoticed because they don’t violate predefined checks. DeltaMax™ continuously observes how data behaves across sources and over time. It learns normal patterns and establishes a reliable baseline for comparison. When data deviates from this baseline in a meaningful way, it is automatically flagged. This approach eliminates the need to manually define every possible rule. Hidden issues are detected early while only meaningful deviations are highlighted, significantly reducing noise. Teams gain a deeper understanding of data behavior across all systems." },
+            { id: 1, title: "Drift Monitoring", desc: "Data drift silently degrades the performance of models and analytics over time. DeltaMax™ automatically detects schema drift, statistical drift, and concept drift across your data pipelines. It continuously tracks changes in data distribution and relationships between features. Alerts are triggered before drift can impact downstream systems or business decisions. The platform provides clear visualization of how data patterns are evolving compared to historical baselines. Teams can monitor and compare current behavior with expected norms in real time. Early detection helps maintain long-term accuracy in machine learning models and reporting systems. Proactive monitoring ensures sustained reliability across all data pipelines." },
+            { id: 2, title: "Freshness Monitoring", desc: "Timely data is critical for accurate and reliable decision making. DeltaMax™ continuously monitors data latency and update cadence across all sources and pipelines. It tracks when data was last refreshed and compares it against expected arrival times. Automatic alerts are sent the moment critical datasets fall behind schedule. The system intelligently understands different freshness requirements for various datasets. Business teams always have clear visibility into the recency of their data. It effectively prevents decisions based on stale or outdated information. Freshness metrics are displayed prominently in real-time dashboards for easy monitoring." },
+            { id: 3, title: "Business Rules", desc: "Every organization has unique business logic and strict compliance requirements. DeltaMax™ allows you to easily define and manage custom business rules at scale. Rules can range from simple field validations to complex multi-field and cross-dataset conditions. The platform continuously validates incoming data against these defined rules. It supports both technical validations and domain-specific business logic. Compliance teams can ensure regulatory requirements are consistently met. Any violations are flagged immediately with clear explanations and context. Rules can be updated quickly without disrupting ongoing data pipelines." },
+            { id: 4, title: "Hyperparameters", desc: "Model performance depends heavily on well-tuned hyperparameter settings. DeltaMax™ tracks and versions hyperparameters alongside all data quality metrics. It monitors changes in configurations and their impact on overall system behavior. The platform helps identify when parameter adjustments affect data quality or model accuracy. It provides optimization recommendations based on observed performance trends. Teams can maintain full reproducibility across experiments and production environments. Hyperparameter drift is automatically detected and alerted. This unified approach strengthens model governance and long-term reliability." },
+            { id: 5, title: "Budgets", desc: "Managing costs in modern data operations has become increasingly important. DeltaMax™ provides real-time visibility into compute, storage, and processing expenses. Teams can set custom budgets for different pipelines and workloads. Proactive alerts are triggered when spending exceeds defined thresholds. The system identifies unusual usage patterns and cost anomalies quickly. Optimization recommendations help reduce unnecessary spending without compromising data quality. Finance and data teams can collaborate more effectively with shared insights. Budget forecasting capabilities support better long-term resource planning." },
+            { id: 6, title: "AI Agent", desc: "The AI Agent serves as the intelligent core of the DeltaMax platform. It combines powerful anomaly detection with deep contextual understanding. A real-time Trust Score provides an instant indicator of overall data reliability. The Agent Summary explains exactly what changed in the data and where the change occurred. It clearly indicates whether the change is expected, minor, or critical. Teams no longer need to manually correlate multiple signals or run separate checks. The agent connects detection, explanation, and recommended actions seamlessly. This dramatically reduces investigation time and enables faster, more confident decisions." },
+            { id: 7, title: "Root Cause Analysis", desc: "Identifying the true source of data issues is often complex and time-consuming. DeltaMax™ provides powerful end-to-end data lineage tracking capabilities. It automatically traces problems back to their original source. Root cause analysis includes detailed impact assessment across connected systems. The platform suggests possible remediation steps based on the analysis. Teams can clearly understand both technical and business impact of issues. Historical patterns help prevent recurrence of similar problems. Clear and comprehensive reports support effective collaboration between technical and business teams." },
+            { id: 8, title: "Alerts", desc: "Traditional alerting systems often create noise and alert fatigue for teams. DeltaMax™ delivers intelligent, context-rich notifications that go far beyond simple alerts. Each notification includes severity assessment, business impact, and current Trust Score. The integrated Agent Summary provides immediate explanation and context. Alerts are intelligently prioritized based on actual risk to the business. Teams receive actionable insights instead of raw data notifications. Seamless integration with communication tools ensures quick and effective response. Overall investigation time is significantly reduced while response quality improves." },
+            { id: 9, title: "Forecasting", desc: "Reactive data quality management is no longer sufficient in fast-moving environments. DeltaMax™ uses advanced forecasting to predict potential data quality issues before they occur. It analyzes historical patterns to forecast drift, freshness problems, and anomaly risks. Teams receive early warnings allowing them to take preventive action. Forecasting helps with better capacity planning and resource allocation. The system supports proactive rather than reactive data governance strategies. Future data health becomes visible and manageable. This forward-looking approach significantly improves overall data reliability and trust." }
+        ];
+
+        let currentIndex = 0;
+
+        function renderStackedCards() {
+    const wrap = document.getElementById('stack-wrap');
+    wrap.innerHTML = '';
+
+    features.forEach((f, i) => {
+        const card = document.createElement('div');
+        card.className = 'stack-card';
+        card.dataset.featureIndex = i;
+        
+        // Image names based on feature titles
+        let imageName = '';
+        switch(f.title.toLowerCase()) {
+            case "anomaly detection": imageName = "anomaly.png"; break;
+            case "drift monitoring": imageName = "drift.png"; break;
+            case "freshness monitoring": imageName = "freshness.png"; break;
+            case "business rules": imageName = "business-rules.png"; break;
+            case "hyperparameters": imageName = "hyperparameter.png"; break;
+            case "budgets": imageName = "budgets.png"; break;
+            case "ai agent": imageName = "agent.png"; break;
+            case "root cause analysis": imageName = "root-cause.png"; break;
+            case "alerts": imageName = "alerts.png"; break;
+            case "forecasting": imageName = "forecasting.png"; break;
+            default: imageName = "default.png";
+        }
+
+        card.innerHTML = `
+            <img 
+                src="images/${imageName}" 
+                alt="${f.title}" 
+                class="w-full h-full object-contain p-6 bg-white"
+            >
+        `;
+        wrap.appendChild(card);
+    });
+    updateStack();
+}
+        function updateStack() {
+            const cards = document.querySelectorAll('.stack-card');
+            cards.forEach((card, i) => {
+                const diff = (i - currentIndex + features.length) % features.length;
+                if (diff === 0) card.dataset.role = 'active';
+                else if (diff === 1) card.dataset.role = 'next';
+                else card.dataset.role = 'prev';
+            });
+            updateFeatureText();
+        }
+
+        function updateFeatureText() {
+            const f = features[currentIndex];
+            document.getElementById('feature-content').innerHTML = `
+                <span class="text-sky-300 font-medium tracking-wide text-sm md:text-base">FEATURE ${String(currentIndex + 1).padStart(2, '0')}</span>
+                <h2 class="text-3xl md:text-5xl font-bold mt-4 mb-6 text-white leading-tight">${f.title}</h2>
+                <p class="text-base md:text-lg text-slate-300 leading-relaxed">${f.desc}</p>
+            `;
+        }
+
+        function nextFeature() {
+            currentIndex = (currentIndex + 1) % features.length;
+            updateStack();
+        }
+
+        function prevFeature() {
+            currentIndex = (currentIndex - 1 + features.length) % features.length;
+            updateStack();
+        }
+
+        // Dropdown
+        function toggleDropdown(btn) {
+            const dropdown = btn.parentElement;
+            document.querySelectorAll('.dropdown').forEach(d => {
+                if (d !== dropdown) d.classList.remove('active');
+            });
+            dropdown.classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            }
+        });
+
+        /* Timeline */
+        const timelineData = [
+            { title: "Phase 1: Discovery", desc: "We begin by deeply understanding your business objectives, challenges, and current data landscape through workshops and comprehensive audits." },
+            { title: "Phase 2: Strategy", desc: "We co-create a tailored data quality roadmap aligned with your strategic goals and technical requirements." },
+            { title: "Phase 3: Implementation", desc: "Our expert engineers implement DeltaMax with continuous collaboration and knowledge transfer throughout the rollout." },
+            { title: "Phase 4: Optimization", desc: "We continuously monitor performance, fine-tune configurations, and optimize for maximum reliability and efficiency." },
+            { title: "Phase 5: Scale & Support", desc: "We help you scale trusted data practices across the entire organization with training, documentation, and ongoing support." }
+        ];
+
+        let timelineIndex = 0;
+        let timelineAutoPlay = null;
+
+        function selectTimeline(index) {
+            timelineIndex = index;
+            for (let i = 0; i < 5; i++) {
+                const dot = document.getElementById('dot-' + i);
+                const label = document.getElementById('label-' + i);
+                dot.classList.toggle('is-active', i === index);
+                label.classList.toggle('is-active', i === index);
+            }
+            const progressBar = document.getElementById('timeline-progress');
+            const fraction = index / 4;
+            progressBar.style.width = `calc((100% - 48px) * ${fraction})`;
+
+            const box = document.getElementById('timeline-content-box');
+            box.style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('timeline-title').textContent = timelineData[index].title;
+                document.getElementById('timeline-desc').textContent = timelineData[index].desc;
+                box.style.opacity = '1';
+            }, 250);
+        }
+
+        function goToTimeline(index) {
+            selectTimeline(index);
+            clearInterval(timelineAutoPlay);
+            startTimelineAutoplay();
+        }
+
+        function startTimelineAutoplay() {
+            timelineAutoPlay = setInterval(() => {
+                selectTimeline((timelineIndex + 1) % 5);
+            }, 5000);
+        }
+
+        window.onload = () => {
+            renderStackedCards();
+            selectTimeline(0);
+            startTimelineAutoplay();
+            setInterval(nextFeature, 4500);
+        };
+    </script>
+</body>
+</html>
