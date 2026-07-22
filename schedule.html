@@ -134,6 +134,28 @@
     width:38px; height:38px; border-radius:10px; background:rgba(14,165,233,0.18);
     display:flex; align-items:center; justify-content:center; color:#38BDF8; font-size:0.95rem;
   }
+
+  /* Success/Error message styles */
+  #form-status {
+    min-height: 30px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: none;
+  }
+  #form-status.success {
+    display: block;
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+  }
+  #form-status.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+  }
 </style>
 </head>
 <body>
@@ -158,6 +180,8 @@
                     <a href="index.html" class="nav-link hover:text-blue-700">Home</a>
                     <a href="about.html" class="nav-link hover:text-blue-700">About</a>
                     <a href="competitive_intel.html" class="nav-link hover:text-blue-700">Competitive Intel</a>
+                    <a href="blog.html" class="nav-link hover:text-blue-700">Blogs</a>
+
                     
                     <!-- Marketplace Dropdown -->
                     <div class="dropdown group">
@@ -262,7 +286,7 @@
       </div>
 
       <form id="contactForm" class="space-y-5">
-        <div id="form-status" class="text-sm min-h-5"></div>
+        <div id="form-status"></div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
@@ -397,62 +421,56 @@
 <script>
   document.getElementById('copyright-year').textContent = new Date().getFullYear();
 
-  async function submitContactForm(event) {
-    event.preventDefault();
+  // ===== FORM SUBMISSION USING WEB3FORMS =====
+  const form = document.getElementById('contactForm');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const statusEl = document.getElementById('form-status');
 
-    const form = event.target;
-    const statusEl = document.getElementById('form-status');
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
+  form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    statusEl.innerHTML = '';
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+      const formData = new FormData(form);
+      formData.append("access_key", "d603b190-1e0c-4a7d-ac1f-b353322abb59");
 
-    const fullName = form.querySelector('[name="Full Name"]').value.trim();
-    const workEmail = form.querySelector('[name="Work Email"]').value.trim();
-    const phoneNumber = form.querySelector('[name="Phone Number"]').value.trim();
-    const companyName = form.querySelector('[name="Company Name"]').value.trim();
-    const service = form.querySelector('[name="Service"]').value;
-    const message = form.querySelector('[name="Message"]').value.trim();
+      const originalText = submitBtn.innerHTML;
 
-    const payload = {
-      fullName,
-      workEmail,
-      phoneNumber,
-      companyName,
-      service,
-      message
-    };
+      // Show loading state
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+      submitBtn.disabled = true;
+      statusEl.className = '';
+      statusEl.style.display = 'none';
+      statusEl.textContent = '';
 
-    try {
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+      try {
+          const response = await fetch("https://api.web3forms.com/submit", {
+              method: "POST",
+              body: formData
+          });
 
-      if (!response.ok) {
-        throw new Error('SendGrid request failed');
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+              statusEl.className = 'success';
+              statusEl.style.display = 'block';
+              statusEl.textContent = '✅ Success! Your message has been sent. We\'ll get back to you within 24 hours.';
+              form.reset();
+          } else {
+              statusEl.className = 'error';
+              statusEl.style.display = 'block';
+              statusEl.textContent = '❌ Error: ' + (data.message || 'Something went wrong. Please try again.');
+          }
+
+      } catch (error) {
+          statusEl.className = 'error';
+          statusEl.style.display = 'block';
+          statusEl.textContent = '❌ Network error. Please check your connection and try again.';
+      } finally {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
       }
+  });
 
-      statusEl.innerHTML = '<span class="text-green-600 font-medium">Thanks! Your message has been sent successfully.</span>';
-      form.reset();
-    } catch (error) {
-      statusEl.innerHTML = '<span class="text-red-600 font-medium">Sorry, your message could not be sent right now. Please try again later.</span>';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalText;
-    }
-  }
-
-  const contactForm = document.getElementById('contactForm');
-  if (contactForm) {
-    contactForm.addEventListener('submit', submitContactForm);
-  }
-
+  // ===== DROPDOWN TOGGLE =====
   function toggleDropdown(btn) {
       const dropdown = btn.parentElement;
       document.querySelectorAll('.dropdown').forEach(d => {

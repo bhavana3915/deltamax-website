@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeltaMax – LinkedIn Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #F8FAFC;
+      color: #0F172A;
+    }
+    :root {
+      --primary: #0369A1;
+      --cream: #F8FAFC;
+      --dark: #0F172A;
+      --gray-soft: #64748B;
+    }
+    .navbar {
+      background: rgba(248, 250, 252, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+    }
+    .nav-link {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .nav-link:hover {
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      padding: 16px;
+      z-index: 50;
+      min-width: 240px;
+    }
+    .dropdown:hover .dropdown-content,
+    .dropdown.active .dropdown-content {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+    .cloud-icon {
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .cloud-icon:hover { transform: scale(1.12); }
+    .grad-text { color: var(--primary); }
+
+    /* blog card */
+    .blog-card {
+      transition: all 0.2s ease;
+      background: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      border: 2px solid #e2e8f0; /* Added prominent border */
+    }
+    .blog-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 30px -12px rgba(3, 105, 161, 0.15);
+      border-color: #b3d9f0;
+    }
+    .read-more-btn {
+      background: white;
+      border: 1.5px solid #0369A1;
+      color: #0369A1;
+      transition: all 0.2s;
+    }
+    .read-more-btn:hover {
+      background: #0369A1;
+      color: white;
+      box-shadow: 0 8px 16px -6px rgba(3, 105, 161, 0.3);
+    }
+    .post-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 1rem 1rem 0 0;
+    }
+    @media (max-width: 768px) {
+      .post-img { height: 160px; }
+    }
+    .dropdown-content a { display: inline-flex; }
+    .company-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 2px 10px 2px 6px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .company-badge img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex items-center justify-between h-16">
+
+      <!-- Logo -->
+      <a href="index.html" class="flex items-center gap-x-3 shrink-0 hover:opacity-90 transition">
+        <img src="images/Logo.png" alt="DeltaMax Logo" class="w-9 h-9 rounded-2xl shadow-md object-cover" />
+        <span class="text-2xl font-semibold tracking-tighter text-gray-900">DeltaMax</span>
+      </a>
+
+      <!-- Center Navigation -->
+      <div class="hidden md:flex items-center gap-x-8 text-sm font-medium text-gray-600 absolute left-1/2 -translate-x-1/2">
+        <a href="index.html" class="nav-link hover:text-blue-700">Home</a>
+        <a href="about.html" class="nav-link hover:text-blue-700">About</a>
+        <a href="competitive_intel.html" class="nav-link hover:text-blue-700">Competitive Intel</a>
+        <a href="blog.html" class="nav-link hover:text-blue-700">Blogs</a>
+
+        <!-- Marketplace Dropdown -->
+        <div class="dropdown group">
+          <button onclick="toggleDropdown(this)" class="nav-link hover:text-blue-700 flex items-center gap-1">
+            Buy Product
+            <i class="fas fa-chevron-down text-xs transition-transform"></i>
+          </button>
+          <div class="dropdown-content">
+            <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-9 h-9">
+                <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+                <rect x="12" y="1" width="10" height="10" fill="#7FBA00"/>
+                <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
+                <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
+              </svg>
+            </a>
+            <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-9 h-9">
+                <text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text>
+                <path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/>
+                <path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/>
+              </svg>
+            </a>
+            <a href="https://console.cloud.google.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Google Cloud Marketplace">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-9 h-9">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Schedule Demo -->
+        <button onclick="window.location.href='schedule.html'" class="flex items-center gap-x-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40">
+          <i class="far fa-calendar-alt"></i>
+          <span>Schedule Demo</span>
+        </button>
+      </div>
+
+      <!-- Partner Logos -->
+      <div class="flex items-center gap-x-5 ml-auto shrink-0">
+        <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+          <img src="images/katalyst_logo.png" alt="Katalyst Street" class="h-9 w-auto object-contain rounded-lg" />
+        </a>
+        <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
+          <img src="images/neualto_logo.png" alt="NeuAlto - Reach New Heights" class="h-9 w-auto object-contain" />
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== BLOG SECTION ===== -->
+<section class="pt-28 pb-16 px-6 max-w-7xl mx-auto">
+  <div class="mb-10">
+    <span class="inline-block bg-blue-50 text-blue-700 text-xs font-semibold px-4 py-1.5 rounded-full tracking-wide uppercase border border-blue-100/70">Insights from our partners</span>
+    <h1 class="text-3xl md:text-4xl font-bold text-[#0F172A] mt-3 tracking-tight">LinkedIn <span class="grad-text">Posts</span></h1>
+    <p class="text-gray-500 max-w-2xl mt-2 text-base">Latest updates from NeuAlto and Katalyst Street on data, AI, and innovation.</p>
+  </div>
+
+  <!-- 3‑column grid (9 posts = 3 rows) -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+    <!-- ===== ROW 1: NeuAlto Posts ===== -->
+    <!-- Post 1 (NeuAlto) -->
+    <div class="blog-card overflow-hidden flex flex-col">
+      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&crop=center&auto=format" alt="Data quality" class="post-img" />
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <i class="fab fa-linkedin text-[#0A66C2]"></i> 6 days ago
+          </span>
+          <span class="company-badge">
+            <img src="images/neualto_logo.png" alt="NeuAlto" /> NeuAlto
+          </span>
+        </div>
+        <h3 class="text-lg font-semibold text-[#0F172A] leading-snug">The Cost of Second-Guessing</h3>
+        <p class="text-gray-600 text-sm leading-relaxed mt-2 flex-1">What happens when teams stop trusting their dashboards? Every decision slows down, and hidden anomalies in data carry a real, unmeasured cost.</p>
+        <a href="https://www.linkedin.com/posts/neualto-technologies-pvt-ltd_dataquality-dataobservability-cdo-activity-7482764568994263040-5pdW?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEU20A8BcnqbaBWBGGEN1tb8VEJWsZ6TWs4" target="_blank" rel="noopener noreferrer" class="read-more-btn mt-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition w-fit">
+          Read more <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Post 2 (NeuAlto) -->
+    <div class="blog-card overflow-hidden flex flex-col">
+      <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&crop=center&auto=format" alt="AI pipeline" class="post-img" />
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <i class="fab fa-linkedin text-[#0A66C2]"></i> 1 week ago
+          </span>
+          <span class="company-badge">
+            <img src="images/neualto_logo.png" alt="NeuAlto" /> NeuAlto
+          </span>
+        </div>
+        <h3 class="text-lg font-semibold text-[#0F172A] leading-snug">How Confident Are You in Your Data Quality?</h3>
+        <p class="text-gray-600 text-sm leading-relaxed mt-2 flex-1">We asked data teams about their confidence — only a handful said "fully confident." The real question: Is the goal to collect more data, or to trust the data you already have?</p>
+        <a href="https://www.linkedin.com/posts/neualto-technologies-pvt-ltd_dataquality-datagovernance-cdo-activity-7480924236572946434-7bgh?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEU20A8BcnqbaBWBGGEN1tb8VEJWsZ6TWs4" target="_blank" rel="noopener noreferrer" class="read-more-btn mt-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition w-fit">
+          Read more <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Post 3 (NeuAlto) -->
+    <div class="blog-card overflow-hidden flex flex-col">
+      <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&h=400&fit=crop&crop=center&auto=format" alt="Team" class="post-img" />
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <i class="fab fa-linkedin text-[#0A66C2]"></i> 3 weeks ago
+          </span>
+          <span class="company-badge">
+            <img src="images/neualto_logo.png" alt="NeuAlto" /> NeuAlto
+          </span>
+        </div>
+        <h3 class="text-lg font-semibold text-[#0F172A] leading-snug"> How Isolation Forest Detects Anomalies</h3>
+        <p class="text-gray-600 text-sm leading-relaxed mt-2 flex-1">From stolen credit cards to machine failures and bot clicks — one algorithm frequently shows up across all these domains: Isolation Forest. Here's why it's a go-to method for anomaly detection.</p>
+        <a href="https://www.linkedin.com/posts/neualto-technologies-pvt-ltd_isolation-forest-activity-7475806758976811009-R6ne?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEU20A8BcnqbaBWBGGEN1tb8VEJWsZ6TWs4" target="_blank" rel="noopener noreferrer" class="read-more-btn mt-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition w-fit">
+          Read more <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ===== ROW 2: NeuAlto Posts (continued) ===== -->
+    <!-- Post 4 (NeuAlto) -->
+    <div class="blog-card overflow-hidden flex flex-col">
+      <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop&crop=center&auto=format" alt="Cloud strategy" class="post-img" />
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <i class="fab fa-linkedin text-[#0A66C2]"></i> 1 month ago
+          </span>
+          <span class="company-badge">
+            <img src="images/neualto_logo.png" alt="NeuAlto" /> NeuAlto
+          </span>
+        </div>
+        <h3 class="text-lg font-semibold text-[#0F172A] leading-snug">The Power of Interquartile Range (IQR)</h3>
+        <p class="text-gray-600 text-sm leading-relaxed mt-2 flex-1">While many anomaly detection methods rely on mean and standard deviation, IQR measures the spread of the middle 50% of your data — making it robust against extreme values and ideal for noisy, skewed datasets.</p>
+        <a href="https://www.linkedin.com/posts/neualto-technologies-pvt-ltd_interquartile-range-iqr-activity-7472929874261954560-hdTm?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEU20A8BcnqbaBWBGGEN1tb8VEJWsZ6TWs4" target="_blank" rel="noopener noreferrer" class="read-more-btn mt-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition w-fit">
+          Read more <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Post 5 (NeuAlto) -->
+    <div class="blog-card overflow-hidden flex flex-col">
+      <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=400&fit=crop&crop=center&auto=format" alt="Data strategy meeting" class="post-img" />
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <i class="fab fa-linkedin text-[#0A66C2]"></i> 3 months ago
+          </span>
+          <span class="company-badge">
+            <img src="images/neualto_logo.png" alt="NeuAlto" /> NeuAlto
+          </span>
+        </div>
+        <h3 class="text-lg font-semibold text-[#0F172A] leading-snug">Data Monitoring Sounds Simple — Until You Actually Do It</h3>
+        <p class="text-gray-600 text-sm leading-relaxed mt-2 flex-1">Modern data pipelines run across multiple clouds, tools, and teams, making things messy. DeltaMax bridges the gap by turning raw data into AI-ready pipelines on Google Cloud.</p>
+        <a href="https://www.linkedin.com/posts/neualto-technologies-pvt-ltd_dataquality-dataobservability-dataengineering-activity-7447585085265981441-xCqy?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEU20A8BcnqbaBWBGGEN1tb8VEJWsZ6TWs4" target="_blank" rel="noopener noreferrer" class="read-more-btn mt-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition w-fit">
+          Read more <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Post 6 (NeuAlto) -->
+    <div class="blog-card overflow-hidden flex flex-col">
+      <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop&crop=center&auto=format" alt="Team collaboration" class="post-img" />
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <i class="fab fa-linkedin text-[#0A66C2]"></i> 1 month ago
+          </span>
+          <span class="company-badge">
+            <img src="images/neualto_logo.png" alt="NeuAlto" /> NeuAlto
+          </span>
+        </div>
+        <h3 class="text-lg font-semibold text-[#0F172A] leading-snug">Building data culture</h3>
+        <p class="text-gray-600 text-sm leading-relaxed mt-2 flex-1">Fostering a data-driven culture with better literacy, ownership, and collaboration.</p>
+        <a href="https://www.linkedin.com/company/neualto-technologies-pvt-ltd/posts/" target="_blank" rel="noopener noreferrer" class="read-more-btn mt-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition w-fit">
+          Read more <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ===== ROW 3: Katalyst Street Posts ===== -->
+    <!-- Post 7 (Katalyst) -->
+    <div class="blog-card overflow-hidden flex flex-col">
+      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&crop=center&auto=format" alt="Katalyst post" class="post-img" />
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <i class="fab fa-linkedin text-[#0A66C2]"></i> 3 months ago
+          </span>
+          <span class="company-badge">
+            <img src="images/katalyst_logo.png" alt="Katalyst Street" /> Katalyststreet
+          </span>
+        </div>
+        <h3 class="text-lg font-semibold text-[#0F172A] leading-snug">What Is Data Quality?</h3>
+        <p class="text-gray-600 text-sm leading-relaxed mt-2 flex-1">Bad data in = Bad AI out. When data is incomplete, inconsistent, or outdated, it's more than a technical glitch — it's a business risk. Better Data → Better Decisions → Better Business.</p>
+        <a href="https://www.linkedin.com/posts/katalyst-street_data-teams-spend-80-of-their-time-on-manual-activity-7450601386704154625-VAXE?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEU20A8BcnqbaBWBGGEN1tb8VEJWsZ6TWs4" target="_blank" rel="noopener noreferrer" class="read-more-btn mt-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition w-fit">
+          Read more <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Post 8 (Katalyst) -->
+    <div class="blog-card overflow-hidden flex flex-col">
+      <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&crop=center&auto=format" alt="Katalyst post" class="post-img" />
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <i class="fab fa-linkedin text-[#0A66C2]"></i> 3 months ago
+          </span>
+          <span class="company-badge">
+            <img src="images/katalyst_logo.png" alt="Katalyst Street" /> Katalyststreet
+          </span>
+        </div>
+        <h3 class="text-lg font-semibold text-[#0F172A] leading-snug">The Cost of Second-Guessing</h3>
+        <p class="text-gray-600 text-sm leading-relaxed mt-2 flex-1">What happens when teams stop trusting their dashboards? Every decision slows down, and hidden anomalies in data carry a real, unmeasured cost.</p>
+        <a href="https://www.linkedin.com/posts/katalyst-street_deltamax-product-solution-activity-7445509608686923777-v6WB?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEU20A8BcnqbaBWBGGEN1tb8VEJWsZ6TWs4" target="_blank" rel="noopener noreferrer" class="read-more-btn mt-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition w-fit">
+          Read more <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Post 9 (Katalyst) -->
+    <div class="blog-card overflow-hidden flex flex-col">
+      <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&h=400&fit=crop&crop=center&auto=format" alt="Katalyst post" class="post-img" />
+      <div class="p-5 flex-1 flex flex-col">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-gray-400 flex items-center gap-1">
+            <i class="fab fa-linkedin text-[#0A66C2]"></i> 3 weeks ago
+          </span>
+          <span class="company-badge">
+            <img src="images/katalyst_logo.png" alt="Katalyst Street" /> Katalyststreet
+          </span>
+        </div>
+        <h3 class="text-lg font-semibold text-[#0F172A] leading-snug">Scaling data governance</h3>
+        <p class="text-gray-600 text-sm leading-relaxed mt-2 flex-1">Practical strategies for data contracts and lineage across distributed teams.</p>
+        <a href="https://www.linkedin.com/company/katalyst-street/posts/" target="_blank" rel="noopener noreferrer" class="read-more-btn mt-4 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition w-fit">
+          Read more <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="text-center text-sm text-gray-400 mt-10 border-t border-gray-200/60 pt-6">
+    <i class="fab fa-linkedin mr-1 text-[#0A66C2]"></i> 
+    Follow <a href="https://www.linkedin.com/company/neualto-technologies-pvt-ltd/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">NeuAlto</a> and 
+    <a href="https://www.linkedin.com/company/katalyst-street/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Katalyst Street</a> on LinkedIn.
+  </p>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-[var(--cream)] border-t border-slate-200 text-[var(--gray-soft)] py-10">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid md:grid-cols-3 gap-10">
+
+      <div>
+        <div class="flex items-center gap-3 text-[var(--dark)] mb-4">
+          <img src="images/Logo.png" alt="DeltaMax Logo" class="w-8 h-8 rounded-2xl shadow-md object-cover" />
+          <span class="text-2xl font-semibold">DeltaMax</span>
+        </div>
+      </div>
+
+      <div class="text-base">
+        <div class="font-semibold text-[var(--dark)] mb-4 text-lg">Quick Links</div>
+        <a href="index.html" class="block hover:text-[var(--primary)] mb-2.5">Home</a>
+        <a href="about.html" class="block hover:text-[var(--primary)] mb-2.5">About</a>
+        <a href="competitive_intel.html" class="block hover:text-[var(--primary)] mb-5">Competitive Intel</a>
+        <div class="flex items-center gap-4">
+          <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-8 h-8">
+              <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+              <rect x="12" y="1" width="10" height="10" fill="#7FBA00"/>
+              <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
+              <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
+            </svg>
+          </a>
+          <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-8 h-8">
+              <text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text>
+              <path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/>
+              <path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/>
+            </svg>
+          </a>
+          <a href="https://console.cloud.google.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Google Cloud Marketplace">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-8 h-8">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="text-base">
+        <div class="font-semibold text-[var(--dark)] mb-4 text-lg">Get in Touch</div>
+        <a href="mailto:contact@katalyststreet.com" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+          <i class="far fa-envelope text-[var(--primary)]"></i>
+          contact@katalyststreet.com
+        </a>
+        <a href="https://www.linkedin.com/company/katalyst-street" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)]">
+          <i class="fab fa-linkedin text-[var(--primary)]"></i>
+          KatalystStreet
+        </a>
+        <a href="https://www.linkedin.com/company/neualto-technologies-pvt-ltd" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:text-[var(--primary)] mb-2.5">
+          <i class="fab fa-linkedin text-[var(--primary)]"></i>
+          NeuAlto
+        </a>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-200 mt-8 pt-5 text-center text-sm">
+      © <span id="copyright-year"></span>
+      <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] underline-offset-2 hover:underline">NeuAlto</a>
+      and
+      <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] underline-offset-2 hover:underline">KatalystStreet</a>.
+      All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleDropdown(btn) {
+    const parent = btn.closest('.dropdown');
+    if (parent) {
+      parent.classList.toggle('active');
+    }
+  }
+  document.getElementById('copyright-year').textContent = new Date().getFullYear();
+  document.addEventListener('click', function(e) {
+    document.querySelectorAll('.dropdown').forEach(d => {
+      if (!d.contains(e.target)) d.classList.remove('active');
+    });
+  });
+</script>
+
+</body>
+</html>
