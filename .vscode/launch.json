@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Flask app",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/public/app.py",
+            "cwd": "${workspaceFolder}/public",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:5000",
+            "webRoot": "${workspaceFolder}/public"
+        }
+    ]
+}

@@ -17,7 +17,7 @@ SENDGRID_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL')
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'schedule.html')
+    return send_from_directory('.', 'index.html')
 
 @app.route('/<path:path>')
 def serve_static(path):
