@@ -23,6 +23,7 @@
         }
         .nav-link { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .nav-link:hover { color: #1e40af; transform: translateY(-1px); }
+        .dropdown { position: relative; }
         .dropdown-content {
             display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
             background: white; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
@@ -31,6 +32,41 @@
         .dropdown:hover .dropdown-content, .dropdown.active .dropdown-content { display: flex; gap: 16px; align-items: center; justify-content: center; }
         .cloud-icon { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .cloud-icon:hover { transform: scale(1.15); }
+
+        /* ----- mobile nav ----- */
+        .hamburger-btn {
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            width: 32px; height: 40px; gap: 5px; background: transparent; border: none; cursor: pointer; flex-shrink: 0;
+        }
+        .hamburger-btn span { display: block; width: 22px; height: 2px; background: #0a1628; border-radius: 2px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
+        .hamburger-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger-btn.active span:nth-child(2) { opacity: 0; }
+        .hamburger-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        .mobile-menu {
+            display: none; flex-direction: column; background: #ffffff;
+            border-top: 1px solid rgba(15,23,42,0.08);
+            box-shadow: 0 12px 24px -8px rgba(15,23,42,0.12);
+            max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+        }
+        .mobile-menu.open { max-height: 520px; }
+        .mobile-menu-inner { display: flex; flex-direction: column; padding: 10px 20px 20px; gap: 2px; }
+        .mobile-menu a.mobile-link {
+            padding: 12px 4px; font-size: 15px; font-weight: 500; color: #334155;
+            border-bottom: 1px solid #f1f5f9; transition: color 0.2s;
+        }
+        .mobile-menu a.mobile-link:active, .mobile-menu a.mobile-link:hover { color: #1e40af; }
+        .mobile-buy-section { padding: 14px 4px; border-bottom: 1px solid #f1f5f9; }
+        .mobile-buy-label {
+            display: block; margin-bottom: 10px; color: #64748b; font-size: 12px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .mobile-buy-icons { display: flex; align-items: center; gap: 20px; }
+        .mobile-schedule-btn { margin-top: 14px; width: 100%; justify-content: center; }
+        @media (max-width: 767px) {
+            .hamburger-btn { display: flex; }
+            .mobile-menu { display: flex; }
+        }
 
         /* ----- hero ----- */
         .hero-bg {
@@ -61,18 +97,18 @@
         .tech-section { padding: var(--section-gap) 70px; background: transparent; }
         .tech-heading { font-size: 38px; font-weight: 700; color: #0a1628; text-align: center; margin-bottom: 40px; letter-spacing: -0.5px; }
         .tech-heading span { color: #0ea5e9; }
-        .cont { position: relative; overflow: visible; min-height: 420px; background: transparent; padding: 0 20px; }
-        .cont__inner { display: flex; gap: 16px; align-items: stretch; min-height: 380px; }
+        .cont { position: relative; overflow: visible; min-height: 520px; background: transparent; padding: 0 20px; }
+        .cont__inner { display: flex; gap: 16px; align-items: stretch; min-height: 480px; }
         .el {
             flex: 1; height: 100%; background: #1a1a2e; position: relative; cursor: pointer;
             overflow: visible; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); border-radius: 16px;
-            min-height: 340px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin-bottom: 40px;
+            min-height: 440px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); margin-bottom: 40px;
         }
         .cont.s--el-active .el:not(.s--active) {
             flex: 0; opacity: 0; margin: 0; padding: 0; width: 0; overflow: hidden;
             transition: all 0.6s cubic-bezier(0.4,0,0.2,1); min-width: 0; min-height: 0; height: 0; margin-bottom: 0;
         }
-        .cont.s--el-active .el.s--active { flex: 1; width: 100%; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); margin-bottom: 0; min-height: 340px; }
+        .cont.s--el-active .el.s--active { flex: 1; width: 100%; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); margin-bottom: 0; min-height: 440px; }
 
         .el__bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -92,33 +128,35 @@
             display: flex; justify-content: center; align-items: center; z-index: 2; pointer-events: none;
             transition: all 0.3s;
         }
-        .el__heading { color: #fff; text-transform: uppercase; font-size: 18px; font-weight: 700; letter-spacing: 2px; text-shadow: 0 2px 20px rgba(0,0,0,0.8); text-align: center; }
+        .el__heading { color: #fff; text-transform: uppercase; font-size: 21px; font-weight: 700; letter-spacing: 2px; text-shadow: 0 2px 20px rgba(0,0,0,0.8); text-align: center; }
         .el.s--active .el__preview-cont { opacity: 0; transform: scale(0.8); }
 
         .el__content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 40px; opacity: 0; pointer-events: none; z-index: 2;
-            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            padding: 48px 56px; opacity: 0; pointer-events: none; z-index: 2;
+            display: flex; align-items: center; justify-content: safe center; flex-direction: column;
             transition: all 0.1s;
             text-align: center;
+            overflow-y: auto;
         }
         .el.s--active .el__content { opacity: 1; pointer-events: auto; transition: all 0.5s 0.8s; }
 
         .el__text {
-            text-transform: uppercase; font-size: clamp(28px, 4vw, 52px); font-weight: 700;
-            color: #fff; text-align: center; line-height: 1.2; max-width: 80%; text-shadow: 0 2px 30px rgba(0,0,0,0.5);
+            text-transform: uppercase; font-size: clamp(30px, 4.2vw, 54px); font-weight: 700;
+            color: #fff; text-align: center; line-height: 1.2; max-width: 90%; text-shadow: 0 2px 30px rgba(0,0,0,0.5);
+            flex-shrink: 0;
         }
         .el__text span { display: block; font-size: 0.5em; font-weight: 400; opacity: 0.8; margin-top: 0.5rem; }
 
         .el__details {
             margin-top: 1.5rem; color: rgba(255,255,255,0.92); text-align: center;
-            max-width: 88%; margin-left: auto; margin-right: auto; font-size: 0.95rem; line-height: 1.8;
+            max-width: 92%; margin-left: auto; margin-right: auto; font-size: 1.15rem; line-height: 1.85;
         }
         .el__details ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
         .el__details li {
             display: inline-block; padding: 0.4rem 1rem; border-radius: 999px;
             background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
-            font-size: 0.9rem;
+            font-size: 1.05rem;
         }
 
         .el__close-btn {
@@ -183,7 +221,7 @@
         .core-card {
             position: relative;
             border-radius: 24px;
-            min-height: 280px;
+            min-height: 360px;
             perspective: 1200px;
             cursor: pointer;
             flex: 0 0 auto;
@@ -230,7 +268,7 @@
         }
         .core-card-content { position: relative; z-index: 2; }
         .core-card h4 {
-            font-size: 20px; font-weight: 700; color: #fff; margin: 0;
+            font-size: 24px; font-weight: 700; color: #fff; margin: 0;
             letter-spacing: -0.2px; text-shadow: 0 2px 12px rgba(0,0,0,0.4);
         }
 
@@ -240,22 +278,23 @@
             transform: rotateY(180deg);
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: safe center;
             align-items: flex-start;
-            padding: 28px;
+            padding: 32px;
             color: #fff;
+            overflow-y: auto;
         }
         .core-card-back .num {
-            font-weight: 700; font-size: 14px; color: #38bdf8; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.85;
+            font-weight: 700; font-size: 16px; color: #38bdf8; letter-spacing: 1px; margin-bottom: 10px; opacity: 0.85; flex-shrink: 0;
         }
         .core-card-back h4 {
-            font-size: 19px; font-weight: 700; color: #fff; margin: 0 0 10px; letter-spacing: -0.2px;
+            font-size: 24px; font-weight: 700; color: #fff; margin: 0 0 14px; letter-spacing: -0.2px; flex-shrink: 0;
         }
         .core-card-back p {
-            font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.85); margin: 0;
+            font-size: 17px; line-height: 1.7; color: rgba(255,255,255,0.9); margin: 0;
         }
         .core-card-back .close-hint {
-            margin-top: 16px; font-size: 12px; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 6px;
+            margin-top: 18px; font-size: 13px; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 6px; flex-shrink: 0;
         }
 
         /* ===== USE CASES ===== */
@@ -315,7 +354,7 @@
         }
 
         /* ===== STICKY SCROLL ===== */
-        .sticky-scroll-section { position: relative; min-height: 280vh; background: transparent; padding: var(--section-gap) 0; }
+        .sticky-scroll-section { position: relative; min-height: 280vh; background: transparent; padding: var(--section-gap) 0 0 0; }
         .sticky-scroll-heading { max-width: 980px; margin: 0 auto 20px; padding: 0 24px; text-align: center; }
         .sticky-scroll-heading h2 { font-size: 38px; font-weight: 700; color: #0a1628; letter-spacing: -0.5px; margin-bottom: 6px; }
         .sticky-scroll-heading p { font-size: 17px; line-height: 1.6; color: #64748b; }
@@ -388,7 +427,7 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ===== TECH STACK ===== */
-        .tech-stack-section { padding: var(--section-gap) 20px; background: #ffffff; text-align: center; }
+        .tech-stack-section { padding: 0 20px var(--section-gap) 20px; background: #ffffff; text-align: center; }
         .tech-stack-section h2 { font-size: 38px; font-weight: 700; color: #0a1628; letter-spacing: -0.5px; margin-bottom: 8px; }
         .tech-stack-section h2 span { color: #0ea5e9; }
         .tech-stack-section .sub { color: #64748b; font-size: 17px; margin-bottom: 40px; }
@@ -460,10 +499,20 @@
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .tech-section, .core-section, .use-cases-section { padding: var(--section-gap-tablet) 30px; }
-            .sticky-scroll-section { padding: var(--section-gap-tablet) 0; }
+            .sticky-scroll-section { padding: var(--section-gap-tablet) 0 0 0; }
             .tech-heading, .core-heading, .use-cases-heading, .sticky-scroll-heading h2, .tech-stack-section h2, .security-section h2 { font-size: 32px; }
             .use-cases-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
             .security-grid { grid-template-columns: 1fr; gap: 20px; }
+            /* Platform Architecture cards: stack vertically instead of squeezing 6 into a row */
+            .cont { min-height: 0; padding: 0; }
+            .cont__inner { flex-direction: column; flex-wrap: nowrap; gap: 16px; min-height: 0; }
+            .el { flex: none !important; width: 100%; min-height: 300px; margin-bottom: 0 !important; opacity: 1 !important; transform: none !important; }
+            .cont.s--el-active .el:not(.s--active) {
+                flex: none !important; opacity: 0 !important; height: 0 !important; min-height: 0 !important;
+                padding: 0; margin: 0 !important; overflow: hidden; width: 100%;
+            }
+            .cont.s--el-active .el.s--active { width: 100%; min-height: 420px; }
+            .el__index { bottom: -30px; }
             .security-left, .security-right { align-items: center; padding-left: 0; }
             .security-item { max-width: 380px; text-align: center; }
             .security-center img { width: 100px; height: 100px; }
@@ -488,16 +537,20 @@
             .core-card, .core-card-face { border-radius: 18px; }
             .core-card {
                 width: auto;
-                min-height: 220px;
+                min-height: 280px;
             }
             .core-card-front { padding: 20px; }
+            .core-card-back { padding: 24px; }
+            .core-card h4 { font-size: 20px; }
+            .core-card-back h4 { font-size: 20px; }
+            .core-card-back p { font-size: 15px; }
             .core-card[data-index="0"] { grid-column: 1 / 2; grid-row: 1; }
             .core-card[data-index="1"] { grid-column: 2 / 3; grid-row: 1; }
             .core-card[data-index="2"] { grid-column: 1 / 2; grid-row: 2; }
             .core-card[data-index="3"] { grid-column: 2 / 3; grid-row: 2; }
             .core-card[data-index="4"] { grid-column: 1 / 3; grid-row: 3; }
             .el__index-number { font-size: 110px; }
-            .el { min-height: 280px; margin-bottom: 30px; }
+            .el { min-height: 300px; margin-bottom: 30px; }
             .logo-item i { font-size: 30px; }
             .logo-item .logo-label { font-size: 10px; }
             .logo-scroll-track { gap: 30px; }
@@ -505,18 +558,21 @@
         }
         @media (max-width: 768px) {
             .tech-section, .core-section, .use-cases-section { padding: var(--section-gap-mobile) 16px; }
-            .sticky-scroll-section { padding: var(--section-gap-mobile) 0; }
+            .sticky-scroll-section { padding: var(--section-gap-mobile) 0 0 0; }
             .tech-heading, .core-heading, .use-cases-heading, .sticky-scroll-heading h2, .tech-stack-section h2, .security-section h2 { font-size: 26px; }
             .use-cases-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
             .use-case-card { min-height: 200px; padding: 18px; }
             .use-case-content h4 { font-size: 18px; }
             .use-case-content p { font-size: 13px; }
-            .cont__inner { gap: 8px; flex-wrap: nowrap; min-height: 280px; }
-            .el { min-height: 200px; margin-bottom: 24px; }
-            .el__heading { font-size: 12px; letter-spacing: 1px; }
+            .cont__inner { flex-direction: column; flex-wrap: nowrap; gap: 14px; min-height: 0; }
+            .el { flex: none !important; width: 100%; min-height: 260px; margin-bottom: 0 !important; }
+            .cont.s--el-active .el:not(.s--active) { height: 0 !important; min-height: 0 !important; opacity: 0 !important; margin: 0 !important; }
+            .cont.s--el-active .el.s--active { min-height: 380px; }
+            .el__heading { font-size: 14px; letter-spacing: 1px; }
             .el__index-number { font-size: 80px; }
-            .el__text { font-size: 22px; }
-            .el__content { padding: 24px; }
+            .el__text { font-size: 26px; }
+            .el__details { font-size: 1rem; }
+            .el__content { padding: 28px; }
             .el__index { bottom: -20px; }
             .sticky-left .title-item { font-size: 11px; padding: 6px 8px; }
             .sticky-right .content-panel h3 { font-size: 22px; }
@@ -533,7 +589,7 @@
             }
             .core-card, .core-card-face { border-radius: 16px; }
             .core-card {
-                min-height: 180px;
+                min-height: 240px;
             }
             .core-card[data-index="0"],
             .core-card[data-index="1"],
@@ -549,11 +605,16 @@
             .use-cases-grid { grid-template-columns: 1fr; max-width: 380px; margin: 0 auto; }
             .use-case-card { min-height: 160px; }
             .tech-heading, .core-heading, .use-cases-heading, .sticky-scroll-heading h2, .tech-stack-section h2, .security-section h2 { font-size: 22px; }
-            .el__heading { font-size: 9px; letter-spacing: 0px; }
-            .cont__inner { gap: 6px; min-height: 200px; }
-            .el { min-height: 150px; margin-bottom: 20px; }
+            .el__heading { font-size: 11px; letter-spacing: 0px; }
+            .cont__inner { flex-direction: column; gap: 12px; min-height: 0; }
+            .el { flex: none !important; width: 100%; min-height: 210px; margin-bottom: 0 !important; }
+            .cont.s--el-active .el:not(.s--active) { height: 0 !important; min-height: 0 !important; opacity: 0 !important; margin: 0 !important; }
+            .cont.s--el-active .el.s--active { min-height: 360px; }
             .el__index-number { font-size: 50px; }
             .el__index { bottom: -16px; }
+            .el__text { font-size: 22px; }
+            .el__details { font-size: 0.95rem; }
+            .el__content { padding: 22px; }
             .sticky-left .title-item { font-size: 10px; padding: 4px 6px; }
             .sticky-right .content-panel h3 { font-size: 18px; }
             .sticky-right .content-panel p { font-size: 13px; }
@@ -562,10 +623,11 @@
             .logo-item .logo-label { font-size: 7px; }
             .logo-item { padding: 4px 6px; min-width: 40px; }
             .security-center img { width: 60px; height: 60px; }
-            .core-card { min-height: 150px; }
-            .core-card-front, .core-card-back { padding: 16px; }
-            .core-card h4 { font-size: 16px; }
-            .core-card-back p { font-size: 13px; }
+            .core-card { min-height: 210px; }
+            .core-card-front, .core-card-back { padding: 18px; }
+            .core-card h4 { font-size: 18px; }
+            .core-card-back h4 { font-size: 17px; }
+            .core-card-back p { font-size: 14px; }
             .hero-collage { max-height: 160px; min-height: 120px; }
         }
         .cont.s--inactive .el { transform: translateY(100%); opacity: 0; }
@@ -582,11 +644,11 @@
 <body>
     <!-- ====== NAVBAR ====== -->
     <nav class="navbar fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
-                <a href="index.html" class="flex items-center gap-x-3 shrink-0 hover:opacity-90 transition">
-                    <img src="images/Logo.png" alt="DeltaMax Logo" class="w-9 h-9 rounded-2xl shadow-md object-cover" />
-                    <span class="text-2xl font-semibold tracking-tighter text-gray-900">DeltaMax</span>
+                <a href="index.html" class="flex items-center gap-x-2 sm:gap-x-3 shrink-0 hover:opacity-90 transition min-w-0">
+                    <img src="images/Logo.png" alt="DeltaMax Logo" class="w-7 h-7 sm:w-9 sm:h-9 rounded-2xl shadow-md object-cover shrink-0" />
+                    <span class="text-lg sm:text-2xl font-semibold tracking-tighter text-gray-900 truncate">DeltaMax</span>
                 </a>
                 <div class="hidden md:flex items-center gap-x-8 text-sm font-medium text-gray-600 absolute left-1/2 -translate-x-1/2">
                     <a href="index.html" class="nav-link hover:text-blue-700">Home</a>
@@ -614,14 +676,42 @@
                         <i class="far fa-calendar-alt"></i> <span>Schedule Demo</span>
                     </button>
                 </div>
-                <div class="flex items-center gap-x-5 ml-auto shrink-0">
-                    <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
-                        <img src="images/katalyst_logo.png" alt="Katalyst Street" class="h-9 w-auto object-contain rounded-lg" />
+                <div class="flex items-center gap-x-2 sm:gap-x-5 ml-auto shrink-0">
+                    <a href="https://www.katalyststreet.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition shrink-0">
+                        <img src="images/katalyst_logo.png" alt="Katalyst Street" class="h-6 sm:h-9 w-auto object-contain rounded-lg" />
                     </a>
-                    <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition">
-                        <img src="images/neualto_logo.png" alt="NeuAlto" class="h-9 w-auto object-contain" />
+                    <a href="https://www.neualto.com/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition shrink-0">
+                        <img src="images/neualto_logo.png" alt="NeuAlto" class="h-6 sm:h-9 w-auto object-contain" />
                     </a>
+                    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu" onclick="toggleMobileMenu()">
+                        <span></span><span></span><span></span>
+                    </button>
                 </div>
+            </div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <div class="mobile-menu-inner">
+                <a href="index.html" class="mobile-link">Home</a>
+                <a href="about.html" class="mobile-link">About</a>
+                <a href="competitive_intel.html" class="mobile-link">Competitive Intel</a>
+                <a href="blog.html" class="mobile-link">Blogs</a>
+                <div class="mobile-buy-section">
+                    <span class="mobile-buy-label">Buy Product</span>
+                    <div class="mobile-buy-icons">
+                        <a href="https://azuremarketplace.microsoft.com/" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Azure Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" class="w-8 h-8"><rect x="1" y="1" width="10" height="10" fill="#F25022"/><rect x="12" y="1" width="10" height="10" fill="#7FBA00"/><rect x="1" y="12" width="10" height="10" fill="#00A4EF"/><rect x="12" y="12" width="10" height="10" fill="#FFB900"/></svg>
+                        </a>
+                        <a href="https://aws.amazon.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="AWS Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-8 h-8"><text x="50" y="58" font-family="Arial, sans-serif" font-weight="700" font-size="58" fill="#0F1111" text-anchor="middle">a</text><path d="M22 78 Q50 92 78 78" stroke="#FF9900" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M73 73 L80 76 L78 84 Z" fill="#FF9900"/></svg>
+                        </a>
+                        <a href="https://console.cloud.google.com/marketplace" target="_blank" rel="noopener noreferrer" class="cloud-icon" title="Google Cloud Marketplace">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-8 h-8"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.97 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <button onclick="window.location.href='schedule.html'" class="mobile-schedule-btn flex items-center gap-x-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-3 rounded-2xl transition-all duration-200 shadow-lg shadow-blue-500/30">
+                    <i class="far fa-calendar-alt"></i> <span>Schedule Demo</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -983,41 +1073,6 @@
         </div>
     </section>
 
-    <!-- ====== SECURITY & COMPLIANCE ====== -->
-    <section class="security-section" id="securitySection">
-        <h2>Security &amp; <span>Compliance</span></h2>
-        <p class="sub">Enterprise-grade security standards across the board</p>
-        <div class="security-grid">
-            <div class="security-left">
-                <div class="security-item" data-index="0">
-                    <span class="icon"><i class="fas fa-shield-alt"></i></span>
-                    <h4>Role Based </h4>
-                    <p>Full compliance with GDPR data protection requirements across all regions.</p>
-                </div>
-                <div class="security-item" data-index="2">
-                    <span class="icon"><i class="fas fa-lock"></i></span>
-                    <h4>End-to-End Encryption</h4>
-                    <p>All data encrypted in transit and at rest with industry-standard AES-256.</p>
-                </div>
-            </div>
-            <div class="security-center">
-                <img src="images/logo (2).png" alt="Security Center" />
-            </div>
-            <div class="security-right">
-                <div class="security-item" data-index="1">
-                    <span class="icon"><i class="fas fa-certificate"></i></span>
-                    <h4>ISO 27001 Certified</h4>
-                    <p>Internationally recognized standard for information security management.</p>
-                </div>
-                <div class="security-item" data-index="3">
-                    <span class="icon"><i class="fas fa-user-shield"></i></span>
-                    <h4>RBAC &amp; SSO</h4>
-                    <p>Role-based access control with single sign-on for enterprise teams.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- FOOTER -->
     <footer class="bg-[var(--cream)] border-t border-slate-200 text-[var(--gray-soft)] py-10">
         <div class="max-w-7xl mx-auto px-6">
@@ -1079,6 +1134,26 @@
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.dropdown')) {
                 document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            }
+        });
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const btn = document.getElementById('hamburgerBtn');
+            menu.classList.toggle('open');
+            btn.classList.toggle('active');
+        }
+        // Close mobile menu when a nav link is tapped, or window is resized to desktop
+        document.querySelectorAll('.mobile-menu a.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobileMenu').classList.remove('open');
+                document.getElementById('hamburgerBtn').classList.remove('active');
+            });
+        });
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                document.getElementById('mobileMenu').classList.remove('open');
+                document.getElementById('hamburgerBtn').classList.remove('active');
             }
         });
 
